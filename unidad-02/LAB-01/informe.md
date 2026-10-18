@@ -58,3 +58,26 @@ Porque la protección en la aplicación depende de que todos accedan por ella. S
 ### 4. ¿Qué ocurriría si `soporte` tuviera acceso directo a `clientes`?
 
 Podría ejecutar `SELECT * FROM clientes;` y ver los correos, teléfonos y RFC completos, haciendo inútil el enmascaramiento de la vista. Esto expondría datos personales sensibles, incumpliendo el principio de mínimo privilegio y poniendo en riesgo la confidencialidad (y el cumplimiento de normativas de protección de datos personales, como la LFPDPPP en México).
+
+## Actividad 4 — Separación de funciones
+
+**1. ¿Qué ocurriría si `analista` pudiera consultar también `pii.mapa_cliente`?**
+
+Podría hacer un `JOIN` entre `analitica.clientes` y `pii.mapa_cliente` y reidentificar a cada persona, es decir, asociar cada token con su identidad real. La seudonimización dejaría de proteger algo, porque el mismo usuario tendría los datos seudonimizados y la "llave" para revertirlos. El riesgo de exposición de datos personales (PII) volvería a ser prácticamente igual que si trabajara directamente con `public.clientes`.
+
+**2. ¿Qué principio de seguridad se está aplicando al separar ambos accesos?**
+
+Se aplican dos principios complementarios:
+
+- **Separación de funciones (separation of duties):** quien analiza los datos no es quien custodia el mapa de reidentificación.
+- **Mínimo privilegio (least privilege):** `analista` solo recibe los permisos estrictamente necesarios (`USAGE` sobre el esquema `analitica` y `SELECT` sobre `analitica.clientes`).
+
+También se relaciona con el principio de **minimización de datos**, ya que el analista solo ve lo que necesita para su trabajo.
+
+**3. ¿Por qué la seudonimización no equivale a anonimización?**
+
+Porque en la seudonimización la identidad **puede recuperarse** si se dispone de información adicional (el mapa, una clave o los datos originales). Los datos siguen siendo datos personales y están sujetos a la normativa de protección de datos (por ejemplo, el RGPD o la LFPDPPP en México). En cambio, la anonimización es **irreversible**: no existe un medio razonable para volver a identificar a la persona, por lo que los datos dejan de considerarse personales.
+
+**4. ¿Qué información permite volver a relacionar el token con una persona?**
+
+La tabla de correspondencia **`pii.mapa_cliente`**, que vincula cada token o identificador seudónimo con el identificador real del cliente. Además, los datos originales de **`public.clientes`** también permiten la reidentificación, ya que contienen la información identificable completa.
