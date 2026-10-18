@@ -81,3 +81,77 @@ Porque en la seudonimización la identidad **puede recuperarse** si se dispone d
 **4. ¿Qué información permite volver a relacionar el token con una persona?**
 
 La tabla de correspondencia **`pii.mapa_cliente`**, que vincula cada token o identificador seudónimo con el identificador real del cliente. Además, los datos originales de **`public.clientes`** también permiten la reidentificación, ya que contienen la información identificable completa.
+
+## Actividad 6 — Análisis del riesgo de reidentificación
+
+**1. ¿Qué identificadores directos fueron eliminados?**
+
+La consulta final solo devuelve `rango_edad`, `region` y `total`, por lo que ya no aparecen los identificadores directos: nombre, correo electrónico, teléfono, identificador de cliente (`id`), dirección completa y cualquier otro dato que apunte a una persona concreta. Además, la salida es agregada (`COUNT(*)`), así que ya no hay registros individuales.
+
+**2. ¿Qué cuasi-identificadores permanecen?**
+
+- **`rango_edad`** (edad generalizada en rangos).
+- **`region`** (los dos primeros dígitos del código postal).
+
+Por sí solos no identifican a nadie, pero combinados entre sí o con fuentes externas (redes sociales, padrones, otras bases) pueden señalar a una persona.
+
+**3. ¿Qué combinaciones de atributos podrían reducir el anonimato?**
+
+- `rango_edad` + `region` cuando la combinación es poco frecuente (por ejemplo, '46+' en una región con muy pocos clientes).
+- Cruzar el resultado con otras tablas o fuentes públicas que contengan edad, ubicación, género, ocupación, fecha de alta, etc.
+- Si se agregaran más atributos (sexo, profesión, fecha de nacimiento, código postal completo), cada nueva columna fragmenta los grupos y los hace más pequeños.
+- Consultas repetidas con filtros distintos (ataques de diferenciación) que permitan deducir a un individuo por resta de resultados.
+
+**4. ¿Qué sucede cuando un grupo contiene pocos registros?**
+
+Los individuos se vuelven fácilmente distinguibles. Un grupo con 1 o 2 personas permite que alguien que conozca a esa persona (o tenga datos externos) la identifique y deduzca información sobre ella. Por eso se aplica el umbral de supresión (`HAVING COUNT(*) >= 5`): garantiza que cada combinación publicada describa al menos 5 personas (idea de k-anonimato).
+
+**5. ¿Qué atributos deberían generalizarse?**
+
+- **Edad:** rangos más amplios o ajustados según la distribución de los datos.
+- **Código postal / región:** usar menos dígitos, municipio, estado o macrorregión.
+- Fechas (nacimiento, alta, compra): reducirlas a año o trimestre.
+- Cualquier otro cuasi-identificador que se agregue después (ocupación, ingresos, etc.), pasándolo a categorías amplias.
+
+**6. ¿Qué información debería suprimirse?**
+
+- Los grupos con menos de `k` registros (en este ejercicio, menos de 5).
+- Los identificadores directos (nombre, correo, teléfono, ID, dirección).
+- Atributos muy específicos o únicos que no sean necesarios para el análisis estadístico.
+- Valores atípicos (por ejemplo, edades extremas) que hagan único a un registro.
+
+**7. ¿Es correcto afirmar que el conjunto de datos es "100 % anónimo"? ¿Por qué?**
+
+**No.** Cumplir `k = 5` no demuestra por sí solo que los datos sean anónimos, porque:
+
+- El k-anonimato solo protege contra la reidentificación por los cuasi-identificadores considerados; no cubre otros atributos ni fuentes externas.
+- Puede haber **ataques de homogeneidad** (todos los miembros del grupo comparten el mismo valor sensible) o de **conocimiento previo**.
+- Los resultados agregados pueden combinarse con otras publicaciones o consultas.
+- El riesgo se reduce, pero nunca es cero; la evaluación debe considerar el contexto, los datos disponibles para un posible atacante y los medios razonables de reidentificación.
+
+Lo correcto es decir que el conjunto tiene un **riesgo de reidentificación reducido**, no que es "100 % anónimo".
+
+### Reto
+
+**Consulta modificada:**
+
+```sql
+SELECT
+  CASE
+    WHEN edad BETWEEN 18 AND 35 THEN '18-35'
+    WHEN edad BETWEEN 36 AND 55 THEN '36-55'
+    ELSE '56+'
+  END AS rango_edad,
+  LEFT(codigo_postal, 1) AS region,
+  COUNT(*) AS total
+FROM clientes
+GROUP BY 1, 2
+HAVING COUNT(*) >= 10;
+```
+
+| Elemento | Documentación |
+|---|---|
+| **Cambio realizado** | Se ampliaron los rangos de edad (18-35, 36-55, 56+), se redujo la región de 2 a 1 dígito del código postal y se subió el umbral de supresión de 5 a 10 registros. |
+| **Motivo** | Rangos y regiones más amplios hacen que cada grupo sea más grande y menos específico; un umbral mayor elimina los grupos pequeños que serían más fáciles de identificar. |
+| **Resultado obtenido** | Menos filas en el resultado, con grupos más grandes (mínimo 10 personas cada uno). Se pierde algo de detalle estadístico, pero aumenta la protección. *(Los conteos exactos dependen de los datos de la tabla `clientes`.)* |
+| **Riesgo que se pretende reducir** | Reidentificación por singularización y por vinculación con fuentes externas (combinación de edad + ubicación), así como el riesgo de inferencia en grupos pequeños. |
