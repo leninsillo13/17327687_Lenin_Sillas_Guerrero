@@ -214,3 +214,159 @@ La evidencia **no debe contener los datos personales eliminados**; basta con ide
 6. **Verificar** conteos y consistencia, y documentar el incidente con una corrección y lecciones aprendidas.
 7. Una vez resuelto, **repetir el proceso de eliminación** solo con la aprobación y el alcance correctos.
 
+## 19.1 Clasificación
+
+Todos los campos de la tabla `clientes` necesitan protección, aunque algunos más que otros según el daño que causaría su filtración.
+
+**Los que más protección necesitan: `nombre`, `correo`, `telefono` y `rfc`.**
+Estos identifican directamente a una persona. Con ellos alguien podría contactarla, suplantarla o cometer fraude. El `rfc` es el más delicado, porque es un identificador fiscal único que además incluye la fecha de nacimiento, lo que facilita el robo de identidad.
+
+**Los que necesitan protección moderada: `edad`, `ciudad`, `codigo_postal` y `fecha_alta`.**
+Por separado no dicen quién es la persona, pero juntos sí pueden hacerlo. Por ejemplo, saber el código postal, la edad y la fecha en que se registró alguien puede bastar para reducir las opciones a una sola persona, aunque se hayan borrado el nombre y el correo. A esto se le llama reidentificación.
+
+**El `id` también se protege.**
+Aunque solo es un número interno, sirve para unir información de distintas tablas. Si se filtra junto con otras bases de datos, permite reconstruir el historial completo del cliente.
+
+**Aspecto jurídico.**
+Según la LFPDPPP, todos estos campos son datos personales porque identifican o hacen identificable a alguien. Ninguno es dato personal *sensible* (como salud, origen étnico o creencias), pero eso no significa que no deban protegerse: el nivel de protección depende del riesgo que genera su exposición, no solo de su categoría legal.
+
+## 19.2 Enmascaramiento
+
+**Qué se ocultó.**
+Se ocultaron parcialmente tres campos de la tabla `clientes`:
+- `correo`: solo se muestran las dos primeras letras y el dominio (por ejemplo, `ju*****@gmail.com`).
+- `telefono`: solo se muestran los últimos cuatro dígitos (por ejemplo, `******1234`).
+- `rfc`: solo se muestran los últimos cuatro caracteres (por ejemplo, `*********AB12`).
+
+Los campos `id` y `nombre` se siguen mostrando completos, porque soporte los necesita para identificar y atender al cliente.
+
+**Para quién.**
+Para el rol `soporte`, es decir, el personal del área de soporte que consulta información de los clientes pero no necesita ver los valores completos de sus datos de contacto ni fiscales.
+
+**Por qué.**
+Porque el personal de soporte solo requiere lo suficiente para reconocer al cliente y dar seguimiento a sus casos, no para contactarlo por su cuenta ni conocer su identificador fiscal. Ocultar estos datos aplica el principio de **mínimo privilegio** y reduce el riesgo de filtración, mal uso o fraude (suplantación, phishing, robo de identidad), sobre todo con el `rfc`, que es el dato más sensible de la tabla. Aun así, los últimos dígitos visibles permiten confirmar con el cliente que se trata del registro correcto.
+
+**Qué mecanismo se utilizó.**
+Se combinaron tres mecanismos:
+1. **Rol (`soporte`)**: se creó con `CREATE ROLE soporte NOLOGIN` para agrupar los permisos del área.
+2. **Vista de acceso restringido (`v_clientes_soporte`)**: aplica el enmascaramiento con funciones de texto (`CONCAT`, `LEFT`, `RIGHT`, `SUBSTRING` y `POSITION`), de modo que los datos reales nunca salen de la base de datos sin ocultar.
+3. **Control de permisos (`GRANT` y `REVOKE`)**: se le concedió al rol `SELECT` solo sobre la vista (más `USAGE` sobre el esquema `public`) y se le retiró todo acceso directo a la tabla `clientes`.
+
+Con esto, al ejecutar `SELECT * FROM v_clientes_soporte` el usuario ve los datos enmascarados, y al ejecutar `SELECT * FROM clientes` el sistema le niega el acceso con un error de permisos.
+
+## 19.3 Seudonimización
+
+**Cómo se generaron los tokens.**
+Se habilitó la extensión `pgcrypto` y se usó la función `gen_random_uuid()` para generar un UUID aleatorio por cada cliente de la tabla `clientes`. Como los tokens son aleatorios, no se derivan de ningún dato del cliente (nombre, correo, RFC, etc.), por lo que no se pueden deducir ni revertir a partir de ellos. Cada token quedó asociado a un `cliente_id` único en la tabla de correspondencia.
+
+**Dónde se encuentra el mapa de correspondencia.**
+En la tabla `pii.mapa_cliente`, dentro del esquema `pii`, que está separado del esquema `analitica`. Esta tabla es la única que relaciona cada `token` con el `id` real del cliente en `public.clientes`. El conjunto de datos de analítica (`analitica.clientes`) solo contiene el `cliente_token`, `edad`, `ciudad`, `codigo_postal` y `fecha_alta`, sin `nombre`, `correo`, `telefono` ni `rfc`.
+
+**Quién debería poder acceder a él.**
+Únicamente personal autorizado y con una necesidad justificada de reidentificar, como el administrador de la base de datos o el responsable de protección de datos. El área de analítica no debería tener acceso al esquema `pii` ni a la tabla `mapa_cliente`; solo al esquema `analitica`.
+
+**Por qué se separaron los permisos.**
+Porque la seudonimización solo funciona si quien analiza los datos no puede volver a la identidad real. Si analítica pudiera leer el mapa, bastaría un `JOIN` para reidentificar a cualquier cliente y el token perdería su utilidad. Al separar los esquemas y los permisos:
+- Analítica puede estudiar tendencias (edad, ciudad, antigüedad) sin conocer quién es cada persona.
+- Si el esquema de analítica se filtra, el atacante no obtiene identidades directas.
+- Se aplica el principio de **mínimo privilegio** y se reduce el riesgo de uso indebido.
+
+Cabe aclarar que los datos siguen siendo **seudonimizados, no anónimos**: como existe el mapa, la reidentificación es posible para quien lo controla. Además, la combinación de `edad`, `ciudad`, `codigo_postal` y `fecha_alta` todavía podría ayudar a reidentificar, por lo que el mapa debe protegerse con especial cuidado.
+
+## 19.4 Anonimización
+
+**Qué identificadores fueron eliminados.**
+Las consultas para el área de dirección no incluyen `id`, `nombre`, `correo`, `telefono` ni `rfc`. Tampoco se muestra ningún registro individual: solo se devuelven conteos (`COUNT(*)`) por grupo, así que la dirección no puede ver a un cliente en particular.
+
+**Qué atributos fueron generalizados.**
+- `edad`: en lugar de la edad exacta se usan rangos (`18-30`, `31-45` y `46+`).
+- `codigo_postal`: solo se conservan los dos primeros dígitos (`LEFT(codigo_postal, 2)`), lo que convierte una zona pequeña en una región más amplia.
+
+Además, se eliminaron por completo `ciudad` y `fecha_alta`, que no aparecen en ninguna de las consultas.
+
+**Qué grupos fueron suprimidos.**
+En la consulta 12.4 se usa `HAVING COUNT(*) >= 5`, por lo que se suprimen todos los grupos (combinación de `rango_edad` y `region`) con menos de cinco clientes. Esto evita que alguien quede en un grupo muy pequeño, o incluso solo, y sea fácil de señalar. Por ejemplo, un grupo de 1 o 2 personas de 46+ años en una región concreta no aparecería en el resultado.
+
+**Qué riesgo de reidentificación permanece.**
+Aunque el riesgo baja mucho, no desaparece:
+- Cumplir con `k = 5` es solo un ejercicio didáctico y **no demuestra que los datos sean completamente anónimos**. Solo garantiza que cada combinación publicada tiene al menos cinco personas, pero únicamente respecto a los atributos usados (`rango_edad` y `region`).
+- Si se agregan más atributos o se cruzan los resultados con otras fuentes (redes sociales, directorios, otras bases), los grupos pueden volverse a hacer pequeños y facilitar la reidentificación.
+- Si las consultas 12.1, 12.2, 12.3 y 12.4 se publican juntas, se pueden comparar los resultados (por ejemplo, restar totales) para inferir información de los grupos suprimidos.
+- Si todas las personas de un grupo comparten una característica, se puede deducir ese dato de cualquiera de ellas aunque el grupo tenga cinco o más integrantes.
+- Una región con pocos clientes en total puede seguir siendo identificable por el contexto.
+
+Por eso, la evaluación real debe considerar otros atributos y posibles combinaciones, y revisarse cada vez que cambien los datos o las consultas que se entregan.
+
+## 19.5 Retención
+
+**Qué criterio se utilizó.**
+Se usó la `fecha_alta` como criterio y un periodo de conservación hipotético de cinco años. La consulta identifica los clientes cuya fecha de alta es anterior a `CURRENT_DATE - INTERVAL '5 years'`, es decir, los registros que superan ese plazo. No se ejecutó ningún `DELETE`: el ejercicio solo busca identificar los registros afectados y diseñar el procedimiento.
+
+**Qué información debería conservarse.**
+- Los datos que la organización necesita para operar o cumplir obligaciones legales, fiscales o contractuales (por ejemplo, información de facturación o fiscal que la ley exija guardar por un plazo determinado).
+- Los registros de clientes que siguen activos o con una relación vigente, aunque su fecha de alta sea antigua.
+- Información agregada o anonimizada, que ya no permite identificar a nadie y puede conservarse para fines estadísticos.
+- Las evidencias de la depuración (bitácoras y actas) y los respaldos mientras estén dentro de su propio periodo de resguardo.
+
+**Qué información podría eliminarse.**
+Los registros de clientes que superaron los cinco años, ya no tienen relación activa con la organización, no están sujetos a una obligación legal de conservación ni a una investigación o litigio en curso. En estos casos, mantener los datos personales ya no tiene una finalidad que lo justifique, y conservarlos solo aumenta el riesgo en caso de filtración.
+
+**Qué controles deberían existir antes de eliminarla.**
+- **Justificación del periodo:** documentar por qué se eligieron cinco años (política interna, requisitos legales o fiscales, finalidad del tratamiento), en línea con el principio de temporalidad de la LFPDPPP.
+- **Revisión de los registros afectados:** validar que la lista obtenida con la consulta sea correcta y que no incluya clientes activos o con obligaciones pendientes.
+- **Aprobación formal:** autorización por escrito del responsable de datos, el área jurídica o de cumplimiento y el dueño del proceso, antes de cualquier eliminación.
+- **Respaldo previo:** una copia verificada de los registros a eliminar (y de la base completa), almacenada de forma segura y con acceso restringido, que se pruebe que puede restaurarse.
+- **Evidencia a conservar:** la consulta ejecutada, el número y la lista de registros afectados (de preferencia seudonimizada), la fecha, quién ejecutó y quién aprobó, y el resultado de la eliminación.
+- **Procedimiento de recuperación:** en caso de eliminación accidental, restaurar los registros desde el respaldo previo (o con recuperación a un punto en el tiempo) en un entorno controlado, validar la información y reinsertarla en la tabla principal, documentando el incidente. Esto se trabajará en las prácticas de respaldo y recuperación.
+- **Eliminación controlada:** ejecutar primero en un entorno de pruebas, usar transacciones y limitar el `DELETE` a los registros aprobados.
+
+## 19.6 Conclusiones
+
+**¿Qué técnica utilizarías para un área de soporte?**
+Enmascaramiento (masking). Soporte necesita reconocer al cliente y atender sus casos, pero no requiere ver completos el correo, el teléfono ni el RFC. Con una vista que muestra solo una parte de esos datos (por ejemplo, los últimos cuatro dígitos) puede trabajar sin exponer la información completa.
+
+**¿Qué técnica utilizarías para un área de analítica?**
+Seudonimización. Analítica necesita estudiar el comportamiento de los clientes (edad, ciudad, antigüedad) sin saber quiénes son. Reemplazar la identidad por un token permite analizar y relacionar registros, mientras que el mapa de correspondencia se guarda aparte, con acceso restringido.
+
+**¿Qué técnica utilizarías para publicar estadísticas?**
+Anonimización. Para publicar o entregar estadísticas a la dirección no hace falta ningún registro individual. Se generalizan los atributos (rangos de edad, regiones), se agregan los resultados y se suprimen los grupos pequeños para reducir el riesgo de reidentificación.
+
+**¿Por qué ninguna de estas técnicas sustituye al control de acceso?**
+Porque estas técnicas reducen qué tan expuesto queda el dato, pero no deciden quién puede llegar a él. Por ejemplo:
+- Una vista con datos enmascarados solo protege si el rol de soporte no puede consultar directamente la tabla `clientes`. Sin `REVOKE`, el enmascaramiento se puede saltar.
+- Los datos seudonimizados siguen siendo reidentificables para quien tenga el mapa `pii.mapa_cliente`. Si analítica lo pudiera leer, el token no serviría de nada.
+- Los datos anonimizados todavía pueden conservar un riesgo residual de reidentificación, sobre todo si se cruzan con otras fuentes, y cumplir con `k = 5` no prueba que sean completamente anónimos.
+
+Por eso estas técnicas funcionan como capas complementarias dentro de una estrategia de **defensa en profundidad**: el control de acceso (roles, permisos, separación de esquemas y mínimo privilegio) define quién puede ver qué, y el enmascaramiento, la seudonimización y la anonimización limitan el daño si ese control falla o si alguien accede a los datos con permisos legítimos pero más amplios de lo necesario.
+
+## 20. Preguntas de reflexión
+
+**1. ¿Cuál es la diferencia entre enmascaramiento y seudonimización?**
+El enmascaramiento oculta parte de un dato al mostrarlo (por ejemplo, `ju*****@gmail.com`), y el usuario sigue viendo el mismo registro con valores parcialmente tapados. La seudonimización reemplaza los identificadores por un token (un UUID) y guarda la correspondencia en otro lugar, de modo que quien analiza los datos no sabe de quién son. El primero busca que se vea menos del dato; la segunda, que el dato no esté ligado directamente a una identidad.
+
+**2. ¿Por qué la seudonimización no significa anonimización?**
+Porque existe un mapa (`pii.mapa_cliente`) que permite volver del token al cliente real. Mientras la reidentificación sea posible, aunque sea para quien controla el mapa, los datos siguen siendo personales. En la anonimización no debería existir una forma razonable de volver a la persona.
+
+**3. ¿Por qué eliminar `nombre` y `RFC` no garantiza que un conjunto de datos sea anónimo?**
+Porque los demás campos pueden identificar por combinación. Atributos como `edad`, `ciudad`, `codigo_postal` y `fecha_alta` reducen el grupo de candidatos y, cruzados con fuentes externas (redes sociales, directorios, otras bases), pueden señalar a una sola persona. Quitar los identificadores directos reduce el riesgo, pero no lo elimina.
+
+**4. ¿Qué función tienen los cuasi-identificadores?**
+No identifican por sí solos, pero al combinarse permiten acotar a una persona o reidentificarla. Por eso hay que detectarlos y tratarlos con generalización (rangos de edad, región en lugar de código postal completo), supresión de grupos pequeños o agregación.
+
+**5. ¿Por qué es importante separar el mapa de seudonimización?**
+Porque el mapa es lo único que permite reidentificar. Si estuviera junto a los datos de analítica, bastaría un `JOIN` para saber quién es cada cliente y el token perdería su utilidad. Al guardarlo en otro esquema (`pii`) con permisos propios, una filtración de los datos analíticos no revela identidades.
+
+**6. ¿Qué principio de seguridad se aplica al impedir que el analista acceda al mapa?**
+El principio de **mínimo privilegio**: cada usuario solo debe tener los permisos necesarios para su tarea. También se aplica la **separación de funciones** (quien analiza no es quien puede reidentificar) y la **necesidad de saber**.
+
+**7. ¿Por qué una vista puede ser preferible a entregar acceso directo a la tabla?**
+Porque la vista expone solo las columnas y los valores necesarios, ya transformados (por ejemplo, enmascarados), mientras que la tabla original queda inaccesible para ese rol. Además, centraliza la regla de protección en un solo lugar, es fácil de auditar y evita que el usuario vea o consulte campos que no necesita.
+
+**8. ¿Qué diferencia existe entre proteger un dato para visualización y protegerlo contra acceso no autorizado?**
+Proteger para visualización (enmascarar, generalizar) controla *cómo se ve* el dato para quien ya tiene acceso legítimo. Proteger contra acceso no autorizado (roles, permisos, autenticación, cifrado) controla *quién puede llegar* al dato. Lo primero no sustituye a lo segundo: un dato enmascarado en una vista sigue completo en la tabla original si esta no está protegida.
+
+**9. ¿Por qué la retención forma parte de la protección de datos?**
+Porque proteger datos también implica no conservarlos más tiempo del necesario. La LFPDPPP establece el principio de temporalidad: los datos deben guardarse solo mientras sean necesarios para la finalidad que justificó su tratamiento o para cumplir obligaciones legales. Una política de retención reduce la cantidad de información expuesta y demuestra un tratamiento responsable.
+
+**10. ¿Qué riesgo existe si una organización conserva información indefinidamente?**
+Aumenta la superficie de ataque: ante una filtración o brecha se expone más información, incluida la de clientes que ya no tienen relación con la organización. También se incumplen principios legales (temporalidad, proporcionalidad), crece el costo de almacenamiento y gestión, aumentan las posibles sanciones y se corre el riesgo de usar datos desactualizados o con una finalidad distinta a la original.
