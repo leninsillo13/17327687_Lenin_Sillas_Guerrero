@@ -155,3 +155,62 @@ HAVING COUNT(*) >= 10;
 | **Motivo** | Rangos y regiones más amplios hacen que cada grupo sea más grande y menos específico; un umbral mayor elimina los grupos pequeños que serían más fáciles de identificar. |
 | **Resultado obtenido** | Menos filas en el resultado, con grupos más grandes (mínimo 10 personas cada uno). Se pierde algo de detalle estadístico, pero aumenta la protección. *(Los conteos exactos dependen de los datos de la tabla `clientes`.)* |
 | **Riesgo que se pretende reducir** | Reidentificación por singularización y por vinculación con fuentes externas (combinación de edad + ubicación), así como el riesgo de inferencia en grupos pequeños. |
+
+## Actividad 7 — Retención de datos: Documentación
+
+### 1. ¿Qué registros serían afectados?
+
+Todos los registros de `clientes` cuya `fecha_alta` sea anterior a la fecha actual menos cinco años. Con la fecha de hoy (18 de octubre de 2026), serían los clientes dados de alta **antes del 18 de octubre de 2021**.
+
+Antes de cualquier eliminación conviene verificar:
+
+- Cuántos registros son (`SELECT COUNT(*)` con el mismo filtro).
+- Si alguno tiene una **relación vigente** (contrato activo, adeudo, litigio, reclamación o requerimiento de una autoridad), porque no debería eliminarse aunque supere el plazo.
+- Si hay **datos relacionados** en otras tablas (`analitica.clientes`, `pii.mapa_cliente`, bitácoras, respaldos) que también deban tratarse.
+
+### 2. ¿Cuál sería la justificación del periodo?
+
+El plazo de cinco años es **hipotético**, para fines del ejercicio. En un caso real se justificaría con:
+
+- **Principio de limitación del plazo de conservación:** los datos personales solo se conservan mientras sean necesarios para la finalidad para la que se recabaron.
+- **Obligaciones legales aplicables** (fiscales, contables, mercantiles, sectoriales), que pueden exigir conservar ciertos datos por un mínimo de años.
+- **Finalidad del negocio:** la relación comercial, la atención de garantías y la prevención de fraudes.
+- **Política de retención documentada** de la organización, aprobada y revisada periódicamente.
+
+### 3. ¿Qué aprobación debería existir antes de eliminar información?
+
+- Autorización formal del **responsable del tratamiento / dueño de los datos** (área de negocio).
+- Visto bueno del **área jurídica o de cumplimiento** y del **oficial de protección de datos (DPO) o responsable de privacidad**.
+- Validación del **área de TI o administración de bases de datos** sobre el alcance técnico.
+- Registro de la solicitud de cambio (ticket o control de cambios) con fecha, alcance, responsable y criterio aplicado.
+- Confirmación de que no existe **retención legal** (*legal hold*) sobre esos registros.
+
+### 4. ¿Qué respaldo debería existir?
+
+- Un **respaldo completo y verificado** de la base de datos (o al menos de los registros afectados) **inmediatamente antes** de la eliminación.
+- Copia de los registros a eliminar en un **almacenamiento restringido y cifrado**, con acceso limitado y periodo de resguardo definido.
+- **Prueba de restauración** del respaldo para comprobar que es utilizable.
+- Respaldos que respeten también la política de retención (no conservar indefinidamente lo que se eliminó).
+
+### 5. ¿Qué evidencia debería conservarse?
+
+- Consulta ejecutada y **número de registros** identificados y eliminados.
+- Fecha, hora y **usuario** que ejecutó el procedimiento.
+- **Aprobaciones** firmadas o registradas (negocio, jurídico, privacidad, TI).
+- Política de retención y criterio aplicado.
+- Resultado de la verificación posterior (conteos antes y después).
+- Bitácoras de auditoría de la base de datos.
+- Evidencia del respaldo previo y de su prueba de restauración.
+
+La evidencia **no debe contener los datos personales eliminados**; basta con identificadores técnicos, conteos y fechas.
+
+### 6. ¿Qué procedimiento permitiría recuperar información eliminada accidentalmente?
+
+1. **Detener** cualquier proceso adicional de eliminación y notificar al responsable.
+2. **Identificar** el alcance del error (qué registros, qué tablas, cuándo).
+3. **Localizar** el respaldo previo a la eliminación (o usar recuperación a un punto en el tiempo, *point-in-time recovery*, si está disponible).
+4. **Restaurar en un entorno separado** y validar la integridad de los datos recuperados.
+5. **Reincorporar** únicamente los registros afectados a la tabla principal (por ejemplo, mediante `INSERT ... SELECT`), cuidando relaciones y llaves.
+6. **Verificar** conteos y consistencia, y documentar el incidente con una corrección y lecciones aprendidas.
+7. Una vez resuelto, **repetir el proceso de eliminación** solo con la aprobación y el alcance correctos.
+
