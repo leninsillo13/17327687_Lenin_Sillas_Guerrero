@@ -75,3 +75,42 @@ Porque la información agregada cubre la necesidad de analítica **sin exponer d
 
 7. **Mejor calidad analítica:** la consulta ya entrega los datos listos para interpretar (conteos y segmentos), sin que el analista tenga que manipular información sensible.
 
+# Actividad 4 — Control de acceso relacionado con la finalidad
+
+## Preguntas
+
+### 1. ¿Qué información puede consultar el rol?
+
+Solo lo que expone la vista `v_analitica_clientes`:
+
+- `ciudad`
+- `rango_edad`
+
+No ve edades exactas, identificadores ni datos de contacto o fiscales.
+
+### 2. ¿Puede consultar directamente `clientes`?
+
+**No.** El rol solo tiene `SELECT` sobre la vista. Al intentar consultar la tabla base, PostgreSQL devuelve un error similar a:
+
+```
+ERROR: permission denied for table clientes
+```
+
+Aunque la vista lee de `clientes`, el rol accede a través de ella con los privilegios del propietario de la vista, y no obtiene acceso a la tabla subyacente.
+
+### 3. ¿Puede obtener nombre, correo y RFC?
+
+**No.** Esas columnas no están en la vista y el rol no tiene acceso a la tabla original. No hay ninguna consulta que le permita recuperarlos con los permisos asignados.
+
+### 4. ¿Qué principio de privacidad estás aplicando?
+
+- **Minimización de datos / proporcionalidad:** analítica solo recibe los datos estrictamente necesarios.
+- **Limitación por finalidad:** los datos se ponen a disposición solo para el propósito de estadísticas.
+- **Privacidad desde el diseño y por defecto:** la restricción está incorporada en la estructura (vista + permisos), no depende de que cada analista se contenga.
+
+### 5. ¿Qué principio de seguridad estás aplicando?
+
+- **Mínimo privilegio:** el rol tiene únicamente los permisos indispensables para su función.
+- **Need-to-know (necesidad de conocer):** accede solo a la información que requiere su trabajo.
+- **Control de acceso basado en roles (RBAC):** los permisos se asignan al rol y no a personas individuales.
+- **Defensa en profundidad:** la vista funciona como capa adicional de protección sobre la tabla.
