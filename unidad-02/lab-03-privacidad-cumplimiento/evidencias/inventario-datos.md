@@ -1,4 +1,5 @@
 # Actividad 1 — Inventario y finalidad de los datos
+## Matriz de clasificación de datos
 
 | Campo | ¿Es dato personal? | Finalidad | ¿Es necesario? | Nivel de acceso | Retención |
 |---|---|---|---|---|---|
@@ -51,4 +52,26 @@ El principio de **minimización de datos**, junto con el de **proporcionalidad**
 - **Finalidad:** los datos se usan solo para el propósito informado al titular.
 - **Mínimo privilegio:** cada área accede solo a lo que necesita.
 - **Privacidad desde el diseño:** la restricción se aplica desde la estructura de la tabla, no después.
+
+# Actividad 3 — Separación por finalidad
+
+## Pregunta
+
+### ¿Por qué esta información puede ser más apropiada para analítica que entregar directamente la tabla completa de clientes?
+
+Porque la información agregada cubre la necesidad de analítica **sin exponer datos personales de individuos**. Las razones principales son:
+
+1. **Minimización de datos:** analítica solo necesita saber *cuántos* clientes hay por ciudad o rango de edad, no *quiénes* son. Entregar nombre, correo, teléfono y RFC excedería la finalidad (principio de proporcionalidad).
+
+2. **Separación por finalidad:** los datos se recabaron para operar el servicio. Usarlos con fines estadísticos debe hacerse con el mínimo de información necesaria, sin arrastrar datos identificativos.
+
+3. **Reducción de riesgo:** si el resultado se filtra o se usa indebidamente, no hay forma de contactar, identificar ni suplantar a ningún cliente. Una tabla completa expondría datos de alto riesgo como el RFC.
+
+4. **Menor posibilidad de reidentificación:** al generalizar la edad en rangos y agrupar por ciudad, ningún registro individual es visible. Los datos agregados son mucho más difíciles de vincular con una persona concreta.
+
+5. **Mínimo privilegio:** cada área accede solo a lo que necesita para su función. Analítica trabaja con estadísticas; soporte, con datos de contacto; finanzas, con datos fiscales.
+
+6. **Cumplimiento normativo:** reduce la obligación y el alcance del tratamiento de datos personales (LFPDPPP), ya que la información agregada y anonimizada deja de permitir identificar al titular.
+
+7. **Mejor calidad analítica:** la consulta ya entrega los datos listos para interpretar (conteos y segmentos), sin que el analista tenga que manipular información sensible.
 
