@@ -1,5 +1,24 @@
 # Evidencia 4
 
+## Objetivo
+
+Analizar si conservar toda la información de los clientes de forma indefinida es compatible con los principios de protección de datos personales, e identificar:
+
+- Si la retención indefinida cumple con el principio de **minimización**.
+- Qué **riesgos** genera conservar información innecesaria.
+- Qué debe **determinar la organización** antes de establecer un periodo de retención.
+- Qué información debe **documentarse** para justificar el periodo seleccionado.
+
+## Procedimiento
+
+**Actividad 10 — Política de retención**
+
+1. Se evaluó si conservar todos los datos de forma indefinida es compatible con el principio de minimización, contrastándolo con los requisitos de finalidad, necesidad y proporcionalidad.
+2. Se identificaron y clasificaron los riesgos de conservar información innecesaria (seguridad, legal, reputacional, operativo, económico, calidad de datos, derechos ARCO y uso indebido).
+3. Se listaron los aspectos que la organización debe determinar antes de fijar un periodo de retención.
+4. Se definió la información que debe documentarse para justificar el periodo elegido.
+
+
 # Actividad 10 — Política de retención
 
 ## Pregunta 1
@@ -64,3 +83,19 @@ Los datos deben conservarse **mientras exista una finalidad vigente o una obliga
 | **Excepciones** | Condiciones que suspenden la eliminación (litigios, requerimientos de autoridad). |
 | **Fecha de aprobación y revisión** | Cuándo se aprobó y cada cuánto se revisará. |
 | **Evidencia de ejecución** | Bitácoras que demuestren que la eliminación o anonimización se realizó. |
+
+## Análisis
+
+**La retención indefinida no es compatible con la minimización.** Este principio exige que los datos se traten solo para finalidades determinadas e informadas y únicamente mientras sean necesarios. Guardar todo "por si acaso" no tiene finalidad, necesidad ni proporcionalidad, y deja los datos sin ciclo de vida: nunca se eliminan, bloquean ni anonimizan.
+
+**Los riesgos se acumulan en varios frentes.** Conservar información innecesaria amplía la superficie de ataque y el impacto de una filtración, expone a sanciones y daño reputacional, y encarece la operación (almacenamiento, respaldos, réplicas). Además, los datos envejecen y pierden calidad, y la atención de derechos ARCO se vuelve más difícil porque hay más copias y ubicaciones que revisar. También se favorece el uso indebido de datos disponibles sin justificación.
+
+**El periodo de retención debe fundamentarse, no improvisarse.** Antes de fijarlo, la organización debe considerar la finalidad, las obligaciones legales y contractuales, los plazos de prescripción, las categorías de datos, el nivel de riesgo, las ubicaciones de las copias, el evento que inicia el conteo, las excepciones y los responsables. No debe existir un único plazo para todo: cada categoría de datos requiere su propio periodo.
+
+**La documentación respalda la rendición de cuentas.** Registrar la categoría, finalidad, fundamento, plazo, justificación, acción al vencimiento, ubicaciones, responsables, excepciones, fechas de revisión y evidencia de ejecución permite demostrar que la política es razonable, proporcional y que realmente se aplica.
+
+## Conclusión
+
+Conservar toda la información de los clientes de forma indefinida contradice el principio de minimización y expone a la organización a riesgos de seguridad, legales, reputacionales, operativos y económicos, además de dificultar la atención de los derechos ARCO. Los datos deben conservarse únicamente mientras exista una finalidad vigente o una obligación legal, y después eliminarse, bloquearse o anonimizarse.
+
+Una política de retención adecuada se construye por categoría de datos, considerando finalidades, obligaciones legales y contractuales, prescripción, riesgo, ubicaciones de las copias, excepciones y responsables. Y debe quedar **documentada y respaldada con evidencia de ejecución**, de modo que la organización pueda justificar cada periodo y demostrar su cumplimiento ante el titular y la autoridad.
