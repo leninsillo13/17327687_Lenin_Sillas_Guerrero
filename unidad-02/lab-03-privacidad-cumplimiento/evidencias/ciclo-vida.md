@@ -1,5 +1,29 @@
 # Evidencia 3
 
+## Objetivo
+
+Comprender cómo se ejerce el **derecho de cancelación** y el **derecho de oposición** (derechos ARCO) sobre los datos personales de un titular, identificando:
+
+- Por qué eliminar un registro de una tabla no implica que la información haya desaparecido de toda la organización (ciclo de vida del dato).
+- Qué diferencia hay entre cancelar y oponerse, qué datos deben conservarse y cuáles dejan de usarse para una finalidad.
+- Qué mecanismos técnicos permiten separar finalidades y por qué la decisión no debe recaer únicamente en el DBA.
+
+## Procedimiento
+
+**Actividad 8 — Derecho de cancelación y ciclo de vida**
+
+1. Se realizó un análisis previo para determinar en qué lugares puede existir información del titular, revisando siete puntos: tablas relacionadas, respaldos, réplicas, registros de auditoría, copias para analítica, archivos exportados y sistemas externos.
+2. Se construyó un **mapa de datos del titular**, partiendo de la tabla `clientes` y ramificando hacia todos los lugares donde sus datos pueden aparecer.
+3. Se respondió la pregunta guía: *¿por qué eliminar un registro no significa que toda la información haya desaparecido?*
+
+**Actividad 9 — Derecho de oposición**
+
+1. Se analizó si ante una oposición es necesario eliminar inmediatamente todos los datos.
+2. Se identificó qué información debe mantenerse y por qué.
+3. Se identificó qué información deja de utilizarse para la finalidad a la que el titular se opuso.
+4. Se definieron mecanismos técnicos para separar finalidades.
+5. Se justificó por qué la decisión final no debe tomarla únicamente el DBA.
+
 # Actividad 8 — Derecho de cancelación y ciclo de vida
 
 ## Análisis previo
@@ -99,3 +123,24 @@ Los mismos datos (correo, ciudad, comportamiento de compra) **siguen existiendo*
 - **Separación de funciones y rendición de cuentas.** Si una sola persona decide y ejecuta, no hay control cruzado. Lo correcto es que la decisión se documente, se autorice y el DBA ejecute con un rol específico, dejando evidencia.
 - **Riesgo de error.** Una decisión técnica aislada podría borrar datos que deben conservarse o dejar activos usos que debieron cesar.
 
+## Análisis
+
+**Por qué un `DELETE` no elimina todo (Actividad 8).** Un `DELETE` sobre `clientes` solo borra la fila en la base de producción. Los datos personales no viven en un solo lugar: pueden permanecer en tablas relacionadas, respaldos, réplicas, bitácoras de auditoría, copias analíticas, archivos exportados y sistemas externos operados por terceros. Además, algunas conservaciones son legítimas: la ley puede exigir mantener ciertos datos (por ejemplo, fiscales), en cuyo caso se **bloquean** (sin uso) hasta que concluya el plazo y luego se suprimen.
+
+**Oposición no es cancelación (Actividad 9).** No es necesario eliminar inmediatamente todos los datos. El titular no pide que se borre todo, sino que sus datos dejen de usarse para una finalidad específica. La relación con la organización puede continuar, por lo que los datos necesarios para las finalidades primarias (atención, entrega, facturación) siguen siendo legítimos. Los mismos datos siguen existiendo, pero no pueden usarse para la finalidad a la que el titular se opuso. Eliminar todo sería desproporcionado y podría afectar obligaciones legales y contractuales.
+
+**Por qué la decisión no debe ser solo del DBA:**
+
+- **Competencia legal:** determinar si la oposición procede y qué datos conservar corresponde al área de privacidad o legal.
+- **Verificación de identidad:** el DBA no debe actuar sin que el área responsable valide al solicitante.
+- **Conocimiento del negocio:** solo las áreas de negocio conocen el impacto en marketing, ventas y analítica.
+- **Excepciones legales:** hay finalidades que no admiten oposición y requieren criterio jurídico.
+- **Alcance más allá de la base de datos:** afecta sistemas externos y proveedores que el DBA no controla.
+- **Separación de funciones:** si una persona decide y ejecuta, no hay control cruzado; lo correcto es documentar, autorizar y que el DBA ejecute con un rol específico, dejando evidencia.
+- **Riesgo de error:** una decisión técnica aislada podría borrar datos que deben conservarse o dejar activos usos que debieron cesar.
+
+## Conclusión
+
+El ejercicio de los derechos de cancelación y oposición va mucho más allá de ejecutar una sentencia SQL. El ciclo de vida de los datos personales abarca tablas relacionadas, respaldos, réplicas, auditoría, analítica, exportaciones y terceros, por lo que cumplir una cancelación exige un **mapa de datos** que permita localizar y tratar la información en todos esos puntos, respetando los plazos legales de conservación (bloqueo y posterior supresión).
+
+En el caso de la oposición, lo correcto no es borrar, sino **dejar de usar** los datos para la finalidad rechazada, conservando lo necesario para las finalidades primarias y las obligaciones legales. Esto se logra con mecanismos técnicos como consentimientos por finalidad, vistas filtradas, RLS, listas de exclusión, seudonimización y propagación a sistemas externos, siempre con auditoría.
