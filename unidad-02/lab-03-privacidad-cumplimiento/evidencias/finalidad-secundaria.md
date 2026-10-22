@@ -117,4 +117,41 @@ GRANT SELECT ON v_marketing_promociones TO marketing;
 | **Retención limitada** | Eliminar perfiles y datos de comportamiento tras un plazo definido. |
 | **Lista de exclusión** | Respetar bajas y oposiciones de forma inmediata. |
 
+# Actividad 6 — Derechos ARCO y la base de datos
+
+## Preguntas
+
+### ¿Qué información adicional debería proporcionar la organización además del resultado de esta consulta?
+
+| Información | Por qué se entrega | Dónde se obtiene |
+|---|---|---|
+| **Aviso de privacidad aplicable** | El titular tiene derecho a conocer las condiciones del tratamiento. | Área de privacidad / cumplimiento |
+| **Finalidades del tratamiento** | Debe saber para qué se usan sus datos (atención, facturación, analítica, marketing). | Matriz de clasificación (Actividad 1) |
+| **Origen de los datos** | Si los dio él mismo o se obtuvieron de un tercero. | Documentación del proceso de captura |
+| **Destinatarios** | A quién se comunican los datos (encargados, proveedores, autoridades). | Registro de transferencias y remisiones |
+| **Plazo de conservación** | Cuánto tiempo se guardarán. | Política de retención (Actividad 1) |
+| **Áreas que acceden** | Qué áreas tratan sus datos. | Matriz de acceso (roles y permisos) |
+| **Cómo ejercer los otros derechos** | Rectificación, cancelación y oposición. | Procedimiento ARCO de la organización |
+
+### Implicaciones técnicas para el DBA
+
+1. **Verificar la identidad antes de consultar.** Buscar por `correo` puede devolver los datos de otra persona si alguien se hace pasar por el titular. La verificación la hace el área responsable, pero el DBA no debe ejecutar la consulta sin esa validación.
+
+2. **La consulta puede devolver 0 o varios registros.** El correo no necesariamente es único. Conviene comparar sin importar mayúsculas (`LOWER(correo) = LOWER(...)`) y, una vez identificado el titular, trabajar con su `id`.
+
+3. **Los datos no están solo en `clientes`.** Hay que localizar al titular en:
+   - Otras tablas relacionadas por `id` (pedidos, facturas, tickets de soporte).
+   - Réplicas, respaldos y archivos de logs.
+   - Exportaciones (CSV, reportes) y sistemas externos (CRM, correo masivo).
+   - Esto exige conocer el mapa de datos de la organización.
+
+4. **Datos agregados.** La vista `v_analitica_clientes` no identifica al titular, por lo que normalmente no entra en la respuesta. Esa es una ventaja de haberla diseñado así.
+
+5. **Aplicar minimización también aquí.** El DBA debe usar un rol específico para ARCO, limitado a lo necesario, y no consultar con permisos amplios.
+
+6. **Dejar registro (auditoría).** Hay que registrar quién ejecutó la consulta, cuándo y a qué solicitud corresponde. Sirve para demostrar el cumplimiento de los plazos.
+
+7. **Entrega segura y legible.** El resultado debe exportarse en un formato comprensible (CSV o PDF) y enviarse por un canal seguro (cifrado o con contraseña), no por correo sin protección.
+
+8. **Cumplir los plazos.** La consulta debe poder ejecutarse con rapidez para que el área de privacidad responda dentro del plazo legal.
 
