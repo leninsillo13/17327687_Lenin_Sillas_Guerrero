@@ -1,4 +1,18 @@
+# Evidencia 1
+
+## Objetivo
+Aplicar principios de privacidad y seguridad de datos personales sobre la tabla `clientes`: clasificar sus campos según finalidad y riesgo, aplicar el principio de minimización, separar los datos por finalidad y restringir el acceso mediante una vista y un rol con permisos limitados.
+
+## Procedimiento
+1. **Inventario y finalidad (Actividad 1):** se revisaron los 9 campos de la tabla `clientes` (id, nombre, correo, telefono, rfc, edad, ciudad, codigo_postal, fecha_alta) y se elaboró una matriz de clasificación que indica si cada uno es dato personal, su finalidad, si es necesario, quién accede y cuánto tiempo se conserva.
+2. **Minimización (Actividad 2):** se evaluó qué campos necesita realmente el área de atención al cliente y se respondieron las preguntas sobre RFC, edad y código postal.
+3. **Separación por finalidad (Actividad 3):** se generó una consulta agregada para analítica que agrupa por ciudad y generaliza la edad en rangos, sin incluir datos identificativos.
+4. **Control de acceso (Actividad 4):** se creó la vista `v_analitica_clientes` (`ciudad` y `rango_edad`), se creó un rol de analítica con `SELECT` solo sobre la vista, y se verificó que el rol puede consultar la vista pero no la tabla `clientes`.
+
 # Actividad 1 — Inventario y finalidad de los datos
+
+
+
 ## Matriz de clasificación de datos
 
 | Campo | ¿Es dato personal? | Finalidad | ¿Es necesario? | Nivel de acceso | Retención |
@@ -114,3 +128,11 @@ Aunque la vista lee de `clientes`, el rol accede a través de ella con los privi
 - **Need-to-know (necesidad de conocer):** accede solo a la información que requiere su trabajo.
 - **Control de acceso basado en roles (RBAC):** los permisos se asignan al rol y no a personas individuales.
 - **Defensa en profundidad:** la vista funciona como capa adicional de protección sobre la tabla.
+
+## Análisis
+No todos los datos tienen el mismo riesgo ni la misma necesidad. El RFC es el más sensible porque permite inferir la fecha de nacimiento y facilita la suplantación de identidad, por lo que debe limitarse a finanzas. Entregar a cada área solo lo que su función requiere aplica la minimización y proporcionalidad (LFPDPPP, art. 13), y reduce la superficie de exposición sin afectar la operación.
+
+Para analítica, la información agregada cubre la necesidad estadística sin exponer individuos. Dificulta la reidentificación, reduce el riesgo en caso de filtración y respeta la separación por finalidad. La vista junto con los permisos por rol hace que esta restricción esté en la estructura y no dependa de la discreción del analista, lo que aplica privacidad desde el diseño, mínimo privilegio, need-to-know, RBAC y defensa en profundidad.
+
+## Conclusión
+Clasificar los datos, entregar a cada área solo lo necesario y controlar el acceso con vistas y roles permite proteger los datos personales sin impedir que cada área haga su trabajo. Las 4 actividades muestran que la privacidad no depende solo de políticas, sino que se puede implementar técnicamente en la base de datos.
