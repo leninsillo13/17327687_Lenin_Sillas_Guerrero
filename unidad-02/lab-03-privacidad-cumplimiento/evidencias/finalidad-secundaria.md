@@ -1,5 +1,33 @@
 # Evidencia 2
 
+## Objetivo
+
+Aplicar los principios de protección de datos personales (finalidad, consentimiento, minimización, mínimo privilegio, trazabilidad) y los derechos ARCO desde la perspectiva del administrador de base de datos (DBA), mediante tres casos prácticos:
+
+- **Actividad 5:** analizar si una organización puede usar los datos de sus clientes para una finalidad secundaria (promociones de marketing) y qué controles técnicos deben limitar la información entregada.
+- **Actividad 6:** determinar qué debe hacer la organización y el DBA al atender una solicitud de **acceso** a datos personales.
+- **Actividad 7:** determinar cómo garantizar autorización y trazabilidad al atender una solicitud de **rectificación** (cambio de correo electrónico).
+
+## Procedimiento
+
+### Actividad 5: Finalidad secundaria
+
+1. Se evaluó si tener los datos autoriza a usarlos para cualquier propósito, aplicando los principios de finalidad, consentimiento, información y proporcionalidad (LFPDPPP, art. 12).
+2. Se elaboró una lista de preguntas previas a implementar el tratamiento (finalidad, consentimiento, necesidad, minimización, perfilado, ARCO, acceso, seguridad, retención, riesgo y menores).
+3. Se revisó campo por campo la tabla `clientes` para decidir qué datos son necesarios para marketing (correo, ciudad, rango de edad, comportamiento resumido, id) y cuáles no (RFC, código postal completo).
+4. Se determinó que marketing no debe tener acceso directo a `clientes`, sino a una vista con datos mínimos y solo de clientes que consintieron.
+5. Se definieron controles técnicos: rol dedicado sin login directo, vista mínima, permisos limitados, seudonimización, generalización, agregación, filtro por consentimiento, Row-Level Security, enmascaramiento, auditoría, límites de exportación, retención limitada y lista de exclusión.
+
+### Actividad 6: Derecho de acceso
+
+1. Se identificó la información adicional que la organización debe entregar al titular junto con el resultado de la consulta: aviso de privacidad, finalidades, origen de los datos, destinatarios, plazo de conservación, áreas que acceden y cómo ejercer los demás derechos.
+2. Se analizaron las implicaciones técnicas para el DBA: verificación de identidad previa, posibilidad de 0 o varios registros, localización de datos fuera de `clientes` (tablas relacionadas, respaldos, logs, exportaciones, sistemas externos), exclusión de datos agregados, uso de un rol específico para ARCO, auditoría, entrega segura y cumplimiento de plazos.
+
+### Actividad 7: Derecho de rectificación
+
+1. Se definieron mecanismos para comprobar que el cambio fue autorizado: validación de identidad, solicitud documentada con folio, verificación de titularidad del nuevo correo y ejecución por un rol con permisos específicos.
+2. Se determinó que debe registrarse quién hizo el cambio, cuándo, el valor anterior, el nuevo y la solicitud asociada, mediante una tabla de auditoría y un trigger en PostgreSQL.
+3. Se analizó la importancia de la trazabilidad.
 
 
 # Actividad 5 — Analizar una finalidad secundaria
@@ -68,41 +96,11 @@ Marketing debe acceder a una **vista o tabla preparada** con solo los campos nec
 
 #### a) Rol dedicado y sin login directo
 
-```sql
-CREATE ROLE marketing NOLOGIN;
-```
-
 #### b) Vista con datos mínimos y solo clientes con consentimiento
-
-Se asume una columna o tabla de consentimientos (por ejemplo, `acepta_promociones`):
-
-```sql
-CREATE VIEW v_marketing_promociones AS
-SELECT
-    id,
-    correo,
-    ciudad,
-    CASE
-        WHEN edad < 18 THEN 'Menor de 18'
-        WHEN edad BETWEEN 18 AND 29 THEN '18-29'
-        WHEN edad BETWEEN 30 AND 44 THEN '30-44'
-        WHEN edad BETWEEN 45 AND 59 THEN '45-59'
-        ELSE '60 o más'
-    END AS rango_edad
-FROM clientes
-WHERE acepta_promociones = TRUE
-  AND edad >= 18;
-```
 
 #### c) Permisos limitados a la vista
 
-```sql
-GRANT USAGE ON SCHEMA public TO marketing;
-GRANT SELECT ON v_marketing_promociones TO marketing;
--- NO: GRANT SELECT ON clientes TO marketing;
-```
-
-#### d) Otros controles recomendados
+#### d) Otros controles recomendados:
 
 | Control | Descripción |
 |---|---|
@@ -155,3 +153,41 @@ GRANT SELECT ON v_marketing_promociones TO marketing;
 
 8. **Cumplir los plazos.** La consulta debe poder ejecutarse con rapidez para que el área de privacidad responda dentro del plazo legal.
 
+# Actividad 7 — Derecho de rectificación
+
+## Preguntas
+
+**1. ¿Cómo podría comprobarse que el cambio fue autorizado?**
+
+- **Validando la identidad del titular** antes de ejecutar el cambio. Esa validación la hace el área responsable de privacidad (por ejemplo, con identificación oficial o confirmando desde el correo anterior).
+- **Contando con una solicitud documentada**, con número de folio, fecha y medio por el que llegó (formulario, correo o ticket). El DBA ejecuta el cambio asociado a esa solicitud y no por petición verbal.
+- **Confirmando la titularidad del nuevo correo**, por ejemplo enviando un enlace de verificación a `nuevo-correo@example.com`. Así se evita registrar un correo que pertenezca a un tercero.
+- **Revisando que el cambio lo haya ejecutado un usuario con permisos para ello** (rol específico para solicitudes ARCO) y no cualquier usuario con acceso a la tabla.
+
+**2. ¿Debería registrarse quién realizó el cambio?**
+
+Sí. Debe registrarse quién lo hizo, cuándo, qué valor tenía el campo antes y cuál tiene ahora, y a qué solicitud corresponde. Una forma de hacerlo en PostgreSQL es con una tabla de auditoría y un *trigger*.
+
+La tabla de auditoría también contiene datos personales (el correo anterior y el nuevo). Por eso debe tener acceso restringido y un plazo de conservación definido, igual que la tabla `clientes`.
+
+**3. ¿Por qué la trazabilidad será importante?**
+
+- **Rendición de cuentas:** permite saber quién modificó el dato y con qué autorización.
+- **Evidencia de cumplimiento:** demuestra ante el titular o la autoridad que la solicitud se atendió, cuándo y en qué plazo.
+- **Detección de cambios indebidos:** si alguien modifica un correo sin autorización (por ejemplo, para tomar el control de una cuenta), el registro permite detectarlo e investigarlo.
+- **Posibilidad de revertir:** si hubo un error, el valor anterior queda guardado y se puede restaurar.
+- **Integridad de los datos:** permite reconstruir el historial de un registro y saber cuál fue su valor en cada momento.
+- **Apoyo en incidentes de seguridad:** ante una sospecha de acceso indebido, la bitácora ayuda a reconstruir lo ocurrido.
+
+## Análisis
+
+- **Los datos tienen una finalidad, no un dueño.** Que la organización los almacene legítimamente no significa que pueda reutilizarlos; cada uso debe estar informado y, si es secundario, ser rechazable por el titular.
+- **Minimización y mínimo privilegio son los ejes técnicos.** Casi todos los controles (vistas, roles, RLS, generalización, seudonimización, enmascaramiento) buscan que cada área vea solo lo indispensable. Una vista bien diseñada, como la de analítica, además facilita el cumplimiento de ARCO porque no identifica al titular.
+- **El DBA no actúa solo.** Identidad, solicitudes y respuestas legales corresponden al área de privacidad; el DBA ejecuta con rol específico, solo ante una solicitud validada y documentada, y deja evidencia.
+- **Los datos están dispersos.** Un titular puede aparecer en tablas relacionadas, réplicas, respaldos, logs, exportaciones y sistemas externos, por lo que atender el acceso, la rectificación o la cancelación exige un mapa de datos actualizado. Además, el correo no es necesariamente único, por lo que se recomienda trabajar con el `id` una vez identificado el titular.
+- **La trazabilidad protege a todos.** Una bitácora permite rendir cuentas, demostrar cumplimiento, detectar cambios indebidos (como la toma de control de una cuenta), revertir errores y reconstruir incidentes. Como la propia bitácora contiene datos personales, también requiere acceso restringido y retención definida.
+- **Los plazos importan.** Las consultas y procesos deben poder ejecutarse con rapidez para que la organización responda dentro del plazo legal.
+
+## Conclusión
+
+Las tres actividades muestran que la protección de datos personales en una base de datos combina **principios jurídicos** (finalidad, consentimiento, información, proporcionalidad) con **controles técnicos concretos** (vistas mínimas, roles dedicados, seudonimización, RLS, auditoría, límites de exportación, retención limitada). El DBA es una pieza clave: no decide sobre la legitimidad de un tratamiento, pero sí puede impedir usos indebidos mediante un diseño que entregue solo lo necesario, y puede garantizar que el ejercicio de los derechos ARCO sea verificable, seguro, oportuno y auditable. En conjunto, la privacidad debe aplicarse **desde el diseño**: restringir el acceso, minimizar los datos, documentar cada solicitud y conservar evidencia de cada acción.
