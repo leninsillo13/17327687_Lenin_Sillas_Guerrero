@@ -140,6 +140,73 @@ host    postgres        dba_lab      ::1/128         scram-sha-256
 
 Cada regla restringe los cuatro elementos: **base de datos + usuario + origen + método de autenticación**. Las reglas de `replication` se eliminarían si no se usa replicación. `app_lab` y `dba_lab` son nombres de ejemplo; los roles se crearán en la fase de cambios.
 
+## Actividad 7: Revisar autenticación
+
+**`password_encryption` = `scram-sha-256`.** Las contraseñas nuevas se almacenan con SCRAM-SHA-256, el mecanismo recomendado, y no con `md5`. No requiere cambios.
+
+**¿Qué diferencia existe entre autenticación y autorización?**
+La autenticación verifica **quién eres** (usuario y contraseña, certificado). La autorización define **qué puedes hacer** una vez identificado (`GRANT`, atributos del rol, propiedad de objetos). Una conexión puede autenticarse correctamente y aun así no tener permiso para leer una tabla.
+
+**¿Qué protege `scram-sha-256`?**
+Protege la contraseña de dos formas. En el servidor se guarda un verificador derivado (sal, iteraciones y claves), no la contraseña. En la red, el cliente demuestra que la conoce mediante un intercambio desafío-respuesta, sin enviarla. Resiste mejor la captura de tráfico y los ataques de diccionario sobre el hash que `md5`. No cifra el resto del tráfico, para eso se necesita TLS.
+
+**¿Por qué una contraseña almacenada mediante un mecanismo de autenticación no debe confundirse con cifrado reversible?**
+Porque el verificador es un hash con derivación de clave y no se puede descifrar para recuperar la contraseña. El servidor solo comprueba que la contraseña presentada produce el mismo resultado. El cifrado reversible permite recuperar el texto original con una clave, lo cual sería una debilidad para almacenar credenciales.
+
+**¿Qué sucede si una cuenta tiene permisos excesivos aunque utilice una contraseña fuerte?**
+La contraseña fuerte solo dificulta que alguien se haga pasar por la cuenta. Si la cuenta se compromete por otra vía (inyección SQL en la aplicación, credencial filtrada en el código, equipo comprometido), el atacante hereda todos sus permisos. El daño depende de los privilegios, no de la contraseña.
+
+## Actividad 8: Revisar usuarios y privilegios
+
+Roles encontrados (excluyendo los internos `pg_*`):
+
+| Rol | LOGIN | SUPERUSER | CREATEROLE | CREATEDB | REPLICATION | BYPASSRLS | Función |
+|---|---|---|---|---|---|---|---|
+| `postgres` | Sí | **Sí** | **Sí** | **Sí** | **Sí** | **Sí** | Administrador del servidor. Se usa también como cuenta de trabajo (pgAdmin). |
+| `analista` | No | No | No | No | No | No | Rol de grupo, probablemente para consulta o análisis. |
+| `soporte` | No | No | No | No | No | No | Rol de grupo, probablemente para tareas de soporte. |
+
+![Roles](evidencias/roles.png)
+
+**Identificación:**
+
+- **Superusuarios:** `postgres`.
+- **Usuarios que pueden iniciar sesión:** solo `postgres`.
+- **Usuarios con CREATEROLE:** `postgres`.
+- **Usuarios con CREATEDB:** `postgres`.
+- **Roles utilizados por aplicaciones:** ninguno dedicado. La conexión de pgAdmin usa `postgres`.
+- **Cuentas que podrían ser innecesarias:** `analista` y `soporte` no representan riesgo por sí mismos (no pueden iniciar sesión), pero hay que verificar a qué roles pertenecen y qué permisos tienen para confirmar que son necesarios.
+
+**¿Por qué no debería utilizarse una cuenta SUPERUSER como cuenta normal de una aplicación?**
+Porque un superusuario ignora todas las comprobaciones de permisos: puede leer y modificar cualquier dato, crear y borrar roles y bases de datos, cargar extensiones, y ejecutar `COPY ... PROGRAM` o leer archivos del servidor, lo que puede llevar a ejecutar comandos en el sistema operativo. Si la aplicación se compromete (por ejemplo, con una inyección SQL), el atacante obtiene control total del servidor y no solo de los datos de la aplicación. Además, un error de la aplicación podría borrar o alterar datos que no le corresponden.
+
+### Complemento de la Actividad 8: membresías y permisos de los roles de grupo
+
+**Membresías:** la consulta sobre `pg_auth_members` devolvió vacío. `analista` y `soporte` no tienen ningún miembro, por lo que actualmente no los usa ninguna cuenta.
+
+**Permisos sobre tablas y vistas (base `laboratorios`):**
+
+| Rol | Esquema | Objeto | Privilegio | Observación |
+|---|---|---|---|---|
+| `analista` | `analitica` | `clientes` (tabla) | SELECT | Acceso directo a la tabla base. Revisar si contiene datos sensibles. |
+| `analista` | `public` | `v_analitica_clientes` (vista) | SELECT | Acceso mediante vista. Correcto. |
+| `soporte` | `public` | `v_clientes_soporte` (vista) | SELECT | Acceso mediante vista, solo lectura. Correcto. |
+
+**Conclusión:** los roles de grupo siguen un diseño de mínimo privilegio (solo lectura, y en el caso de `soporte` solo a través de una vista). Sin embargo, no están asignados a ninguna cuenta con `LOGIN`, así que en la práctica todo el trabajo se hace con `postgres`. El acceso directo de `analista` a `analitica.clientes` debe revisarse.
+
+
+## Actividad 9: Separar cuentas administrativas y de aplicación
+
+| Cuenta | Propósito | LOGIN | Privilegios | Origen permitido |
+|---|---|---|---|---|
+| `dba_lab` | Administración | Sí | Administrativos (`CREATEROLE`, `CREATEDB`), sin usarse para aplicaciones | `127.0.0.1`, `::1` |
+| `app_lab` | Conexión del software | Sí | Mínimos: `CONNECT`, `USAGE` en el esquema y `SELECT/INSERT/UPDATE/DELETE` solo sobre las tablas necesarias | `127.0.0.1`, `::1` |
+| `consulta_lab` | Consulta | Sí | Solo lectura (`SELECT`), por ejemplo mediante pertenencia a `analista` | `127.0.0.1`, `::1` |
+| `postgres` | Cuenta de emergencia | Sí | Superusuario, reservada para mantenimiento | Solo local |
+
+**¿Qué riesgo existe si la aplicación se conecta utilizando una cuenta administrativa?**
+Cualquier vulnerabilidad de la aplicación se convierte en control total del servidor. Un atacante podría leer o borrar todas las bases, crear cuentas persistentes, cambiar contraseñas y, siendo superusuario, alcanzar el sistema operativo. También se pierde la trazabilidad (no se distingue qué hizo la aplicación y qué hizo el administrador) y se incumple el principio de mínimo privilegio.
+
 ## Actividad 13: Revisar exposición de red
 
 **Dirección de escucha:** `0.0.0.0` (IPv4) y `[::]` (IPv6).
