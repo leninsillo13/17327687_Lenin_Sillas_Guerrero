@@ -207,6 +207,56 @@ Porque un superusuario ignora todas las comprobaciones de permisos: puede leer y
 **¿Qué riesgo existe si la aplicación se conecta utilizando una cuenta administrativa?**
 Cualquier vulnerabilidad de la aplicación se convierte en control total del servidor. Un atacante podría leer o borrar todas las bases, crear cuentas persistentes, cambiar contraseñas y, siendo superusuario, alcanzar el sistema operativo. También se pierde la trazabilidad (no se distingue qué hizo la aplicación y qué hizo el administrador) y se incumple el principio de mínimo privilegio.
 
+## Actividad 10: Revisar extensiones
+
+| Extensión | Versión | ¿Necesaria? | Observación |
+|---|---|---|---|
+| `plpgsql` | 1.0 | Sí | Lenguaje procedural que se instala por defecto. Muchas funciones y herramientas dependen de él. |
+| `pgcrypto` | 1.4 | Depende | Instalada para las prácticas de cifrado (LAB-02). Se mantiene si la aplicación usa funciones criptográficas. En otro entorno que no la use, debería eliminarse. |
+
+**Análisis:** que una extensión esté instalada no la hace insegura. El principio de hardening es habilitar únicamente la funcionalidad necesaria para el propósito del sistema. Solo hay dos extensiones, y `pgcrypto` es la única que podría considerarse funcionalidad adicional según el entorno. Se recomienda documentar para qué se usa y, si no se usa, ejecutar `DROP EXTENSION pgcrypto;` tras verificar que ningún objeto depende de ella.
+
+## Actividad 11: Revisar configuración relacionada con conexiones
+
+| Parámetro | Valor actual | Función | Evaluación |
+|---|---|---|---|
+| `max_connections` | 100 | Número máximo de conexiones simultáneas al servidor. Cada una consume un proceso y memoria. | Es el valor por defecto. Solo se observaron 3 conexiones, así que hay margen. Puede reducirse si el entorno es pequeño. |
+| `superuser_reserved_connections` | 3 | Reserva cupos que solo pueden usar superusuarios, para poder entrar a administrar aunque se agoten las conexiones normales. | Adecuado. Los usuarios normales disponen de 97 conexiones. |
+| `statement_timeout` | 0 ms (desactivado) | Cancela cualquier sentencia que supere el tiempo indicado. | Sin límite. Una consulta mal hecha o maliciosa puede ejecutarse indefinidamente. |
+| `idle_in_transaction_session_timeout` | 0 ms (desactivado) | Cierra la sesión que permanece dentro de una transacción abierta sin actividad durante el tiempo indicado. | Sin límite. Una transacción abandonada puede retener bloqueos indefinidamente. |
+
+**Valores propuestos (a aplicar en la fase de cambios):**
+
+- `idle_in_transaction_session_timeout = '5min'`
+- `statement_timeout`: definirlo por rol de aplicación (por ejemplo `ALTER ROLE app_lab SET statement_timeout = '30s';`) y no de forma global, para no interrumpir tareas de mantenimiento largas del administrador.
+
+**¿Por qué mantener conexiones indefinidamente abiertas puede representar un problema de disponibilidad o consumo de recursos?**
+Cada conexión es un proceso del servidor que consume memoria y ocupa uno de los cupos de `max_connections`. Si se acumulan conexiones inactivas o abandonadas, se agotan los cupos y los usuarios legítimos ya no pueden conectarse, lo que equivale a una denegación de servicio. Además, una transacción abierta e inactiva puede retener bloqueos que frenan a otras sesiones e impedir que `autovacuum` limpie filas muertas, lo que degrada el rendimiento con el tiempo. Por último, una sesión olvidada y autenticada es una puerta abierta que sigue disponible si alguien accede al equipo cliente.
+
+## Actividad 12: Revisar permisos del sistema operativo
+
+Sistema operativo: Windows. Se utilizó `icacls` en lugar de `ls -l`.
+
+**Cuenta que ejecuta el servicio** (`postgresql-x64-18`): `NT AUTHORITY\NetworkService`.
+
+| Objeto | Propietario / cuentas con acceso | Permisos | ¿Lectura por otros usuarios? |
+|---|---|---|---|
+| `data` (directorio de datos) | `Administradores`, `SYSTEM`, `NETWORK SERVICE`, `Lenin`, `CREATOR OWNER` | Control total (F) | No. No aparecen `Users` ni `Everyone` |
+| `postgresql.conf` | `Administradores`, `SYSTEM`, `NETWORK SERVICE`, `Lenin` | Control total (F), heredado | No |
+| `pg_hba.conf` | `Administradores`, `SYSTEM`, `NETWORK SERVICE`, `Lenin` | Control total (F), heredado | No |
+
+**Análisis:**
+
+- **Propietario y grupo:** el servicio se ejecuta con una cuenta sin privilegios de administrador (`NetworkService`), lo cual es correcto: si el servicio se compromete, el atacante no obtiene control total de Windows.
+- **Lectura por otros usuarios:** ningún grupo amplio (`Users`, `Everyone`, `Authenticated Users`) tiene acceso al directorio de datos ni a los archivos de configuración.
+- **Observación 1:** la cuenta del servicio tiene permiso de escritura sobre `pg_hba.conf` y `postgresql.conf`. Si el servidor se compromete, un atacante podría alterar las reglas de acceso. Una mejora sería dejar esos dos archivos en solo lectura para `NETWORK SERVICE`. Debe probarse con cuidado, porque `ALTER SYSTEM` escribe en `postgresql.auto.conf` y no en `postgresql.conf`.
+- **Observación 2:** el usuario personal `Lenin` tiene control total. Es aceptable en un laboratorio, pero en producción solo debería tenerlo un grupo administrativo.
+- **Conclusión:** los permisos del sistema operativo son adecuados y no se requieren cambios obligatorios.
+
+**¿Por qué no es suficiente proteger PostgreSQL mediante `GRANT` y `REVOKE` si cualquier usuario del sistema operativo puede leer archivos sensibles?**
+
+Porque `GRANT` y `REVOKE` solo controlan el acceso **a través del servidor PostgreSQL**. Quien lee los archivos directamente desde el sistema operativo se salta todos esos controles. Con acceso al directorio de datos podría copiar los archivos de las bases y abrirlos en otro servidor, o leer `pg_hba.conf` para conocer las reglas de acceso. Con acceso de escritura, podría modificar la configuración para abrir el acceso. La seguridad de la base de datos es tan fuerte como la del sistema operativo que la aloja.
+
 ## Actividad 13: Revisar exposición de red
 
 **Dirección de escucha:** `0.0.0.0` (IPv4) y `[::]` (IPv6).
@@ -214,3 +264,58 @@ Cualquier vulnerabilidad de la aplicación se convierte en control total del ser
 **Puerto:** `5432`.
 
 **¿Está expuesto fuera de la interfaz necesaria?** **Sí.** El servicio solo necesita localhost, pero escucha en todas las interfaces. Que no haya conexiones externas activas no significa que no se puedan establecer: lo único que lo impide en este momento son las reglas de `pg_hba.conf` y del firewall, que aún no se han revisado.
+
+## Actividad 14: Diseñar una política de firewall
+
+**Estado actual (Windows Defender Firewall):**
+
+| Elemento | Resultado |
+|---|---|
+| Perfiles del firewall | Dominio, Privado y Público: **activados** |
+| Regla de entrada para PostgreSQL (por nombre) | No se encontró ninguna |
+| Regla de entrada para el puerto 5432 | Verificado con `Get-NetFirewallPortFilter` (No se encontró ninguna) |
+
+**Observación:** el firewall está activo y no existe una regla explícita que permita conexiones entrantes al puerto 5432, por lo que, con la configuración actual, un equipo remoto probablemente no podría llegar al servicio. Esto reduce el riesgo de `listen_addresses = '*'`, pero esa protección depende de una sola regla del sistema operativo. Si alguien crea una regla permisiva (o un instalador la agrega), el servidor quedaría expuesto.
+
+**Política conceptual** (PostgreSQL en 10.10.10.20, puerto 5432, acceso solo para la red DBA 10.10.10.0/24):
+
+| Origen | Destino | Puerto | Acción |
+|---|---|---|---|
+| 10.10.10.0/24 | PostgreSQL (10.10.10.20) | 5432 | Permitir |
+| Cualquier otro origen | PostgreSQL (10.10.10.20) | 5432 | Denegar |
+
+**¿Por qué `pg_hba.conf` y el firewall no son controles equivalentes?**
+
+Actúan en capas distintas. El firewall trabaja en la red: decide si un paquete **llega** al puerto, sin saber nada de PostgreSQL. `pg_hba.conf` trabaja dentro del servidor: decide si una conexión que **ya llegó** puede autenticarse, según base de datos, usuario, origen y método. Si solo existe `pg_hba.conf`, el puerto sigue visible para escaneos, fuerza bruta contra el servicio y vulnerabilidades del propio servidor. Si solo existe el firewall, cualquier equipo de la red permitida puede intentar entrar con cualquier usuario y base. Se complementan (defensa en profundidad).
+
+## Actividad 15: Revisar TLS
+
+| Parámetro | Valor | Evaluación |
+|---|---|---|
+| `ssl` | `off` | TLS desactivado. El tráfico viaja sin cifrar. |
+| `ssl_min_protocol_version` | `TLSv1.2` | Correcto, pero sin efecto mientras `ssl` esté apagado. |
+| `ssl_cert_file` | `server.crt` | Ruta por defecto (relativa al directorio de datos). Pendiente de verificar que el archivo exista. |
+| `ssl_key_file` | `server.key` | Ruta por defecto (relativa al directorio de datos). Pendiente de verificar que el archivo exista. |
+
+Consulta de la conexión actual (corregida: se une `pg_stat_ssl` con `pg_stat_activity` por `pid`, porque `usename` y `client_addr` no son columnas de `pg_stat_ssl`):
+
+![TLS](evidencias/tls.png)
+
+**¿La conexión actual utiliza TLS?** No. `ssl = f`.
+
+**Versión:** vacía (no aplica).
+
+**Cipher:** vacío (no aplica).
+
+**Relación con LAB-02:** en LAB-02 se vio cómo funciona el cifrado y TLS. En este laboratorio no basta con saber que TLS existe: hay que verificar que esté **integrado en la configuración**. Aquí no lo está: el servidor tiene la versión mínima configurada, pero TLS está apagado, y es probable que no existan certificado ni clave. Aunque hoy todo el tráfico es local (`::1`), cualquier conexión remota futura enviaría datos y consultas sin cifrar.
+
+**Conclusión:** TLS requiere acción: generar un certificado y una clave de servidor, activar `ssl = on`, y configurar los clientes para exigirlo (`sslmode=require` o superior). Se aplica en la fase de cambios.
+
+## Complemento de la Actividad 15: archivos TLS
+
+| Archivo | ¿Existe? |
+|---|---|
+| `C:\Program Files\PostgreSQL\18\data\server.crt` | **No** |
+| `C:\Program Files\PostgreSQL\18\data\server.key` | **No** |
+
+TLS no está integrado: además de `ssl = off`, no hay certificado ni clave. Activar `ssl = on` sin generarlos impediría que el servicio arrancara.
