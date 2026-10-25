@@ -72,6 +72,74 @@ La **arquitectura 2** reduce mejor la exposición, porque:
 3. Solo los equipos de la red privada pueden intentar conectarse, lo que reduce el número de posibles atacantes.
 4. En la arquitectura 1, la seguridad depende únicamente de contraseñas y reglas de `pg_hba.conf`, mientras que en la 2 además se limita quién puede llegar al puerto.
 
+## Actividad 4: Revisar `pg_hba.conf`
+
+Consulta ejecutada sobre `pg_hba_file_rules`:
+
+| Línea | Tipo | Base de datos | Usuario | Dirección | Máscara | Método | Clasificación |
+|---|---|---|---|---|---|---|---|
+| 113 | local | all | all | n/a | n/a | scram-sha-256 | Regla local (socket) |
+| 115 | host | all | all | 127.0.0.1 | 255.255.255.255 (/32) | scram-sha-256 | IPv4, solo localhost |
+| 117 | host | all | all | ::1 | ffff:...:ffff (/128) | scram-sha-256 | IPv6, solo localhost |
+| 120 | local | replication | all | n/a | n/a | scram-sha-256 | Replicación local |
+| 121 | host | replication | all | 127.0.0.1 | 255.255.255.255 (/32) | scram-sha-256 | Replicación IPv4 local |
+| 122 | host | replication | all | ::1 | ffff:...:ffff (/128) | scram-sha-256 | Replicación IPv6 local |
+
+![pg_hba](evidencias/pg-hba.png)
+
+**Hallazgos:**
+
+- **Reglas locales:** 2 (líneas 113 y 120).
+- **Reglas IPv4:** 2 (líneas 115 y 121), ambas `127.0.0.1/32`.
+- **Reglas IPv6:** 2 (líneas 117 y 122), ambas `::1/128`.
+- **Bases de datos afectadas:** `all` y `replication`.
+- **Usuarios afectados:** `all`.
+- **Redes permitidas:** solo localhost.
+- **Método de autenticación:** `scram-sha-256` en todas las reglas.
+- **Reglas excesivamente amplias (`0.0.0.0/0` o `::/0`):** ninguna.
+- **Campo `error`:** sin errores de sintaxis.
+
+**Conclusión:** el archivo ya limita el origen a localhost y usa un método moderno. Los puntos de mejora son que todas las reglas usan `all` en usuario y base de datos, y que las reglas de `replication` no parecen necesarias. Aunque `pg_hba.conf` rechazaría conexiones remotas, el servidor sigue escuchando en todas las interfaces, por lo que la protección depende de una sola capa.
+
+## Actividad 5: Analizar una regla permisiva
+
+Regla conceptual analizada:
+
+```
+host    all    all    0.0.0.0/0    scram-sha-256
+```
+
+| Pregunta | Respuesta |
+|---|---|
+| ¿Qué bases de datos permite? | Todas (`all`), incluidas `postgres`, `template1` y las de otras aplicaciones. |
+| ¿Qué usuarios permite? | Todos (`all`), incluidos los superusuarios. |
+| ¿Qué direcciones de origen permite? | Cualquier dirección IPv4 (`0.0.0.0/0`). |
+| ¿Qué método usa? | `scram-sha-256`: contraseña con intercambio desafío-respuesta, sin enviarla en claro. |
+| ¿Por qué es una exposición innecesaria? | Permite que cualquier equipo de Internet intente autenticarse con cualquier usuario sobre cualquier base. La seguridad queda reducida a la contraseña, y quedan expuestas la fuerza bruta, los usuarios por defecto como `postgres` y las vulnerabilidades del servicio. |
+| ¿Qué información se necesita para restringirla? | Qué aplicación o persona se conecta, desde qué IP o red, a qué base de datos y con qué usuario. |
+
+**Documentación previa a cualquier cambio:**
+
+- **Regla actual:** en este laboratorio no existe una regla `0.0.0.0/0`. Las reglas actuales son `host all all 127.0.0.1/32` y `host all all ::1/128`, ambas con `scram-sha-256`.
+- **Problema:** aunque el origen está limitado, `all`/`all` permite a cualquier usuario local conectarse a cualquier base. Además, `listen_addresses = '*'` hace que el puerto esté alcanzable desde la red.
+- **Origen que realmente necesita acceso:** `127.0.0.1` y `::1` (pgAdmin, en la misma máquina).
+- **Base de datos:** `laboratorios` (y `postgres` para administración).
+- **Usuario:** hoy `postgres`. Debería ser un usuario de aplicación y otro de administración.
+- **Regla propuesta:** ver la Actividad 6.
+
+## Actividad 6: Aplicar mínimo privilegio a conexiones (diseño)
+
+Reglas propuestas para el entorno real (pendiente de aplicar en la fase de cambios, una vez creado el rol de aplicación):
+
+```
+host    laboratorios    app_lab      127.0.0.1/32    scram-sha-256
+host    laboratorios    app_lab      ::1/128         scram-sha-256
+host    postgres        dba_lab      127.0.0.1/32    scram-sha-256
+host    postgres        dba_lab      ::1/128         scram-sha-256
+```
+
+Cada regla restringe los cuatro elementos: **base de datos + usuario + origen + método de autenticación**. Las reglas de `replication` se eliminarían si no se usa replicación. `app_lab` y `dba_lab` son nombres de ejemplo; los roles se crearán en la fase de cambios.
+
 ## Actividad 13: Revisar exposición de red
 
 **Dirección de escucha:** `0.0.0.0` (IPv4) y `[::]` (IPv6).
