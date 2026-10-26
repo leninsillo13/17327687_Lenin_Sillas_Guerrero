@@ -85,7 +85,7 @@ Consulta ejecutada sobre `pg_hba_file_rules`:
 | 121 | host | replication | all | 127.0.0.1 | 255.255.255.255 (/32) | scram-sha-256 | Replicación IPv4 local |
 | 122 | host | replication | all | ::1 | ffff:...:ffff (/128) | scram-sha-256 | Replicación IPv6 local |
 
-![pg_hba](evidencias/pg-hba.png)
+![pg_hba](evidencias/pg-hba.PNG)
 
 **Hallazgos:**
 
@@ -166,7 +166,7 @@ Roles encontrados (excluyendo los internos `pg_*`):
 | `analista` | No | No | No | No | No | No | Rol de grupo, probablemente para consulta o análisis. |
 | `soporte` | No | No | No | No | No | No | Rol de grupo, probablemente para tareas de soporte. |
 
-![Roles](evidencias/roles.png)
+![Roles](evidencias/roles.PNG)
 
 **Identificación:**
 
@@ -457,3 +457,61 @@ No. Una contraseña fuerte solo protege un punto: **la autenticación**, es deci
 - **Monitoreo:** sin logs no se detecta un intento de intrusión ni se puede reconstruir un incidente.
 
 La seguridad es una suma de capas (autenticación + autorización + red + configuración + sistema operativo + monitoreo), y la contraseña es solo una de ellas.
+
+## Preguntas del informe
+
+**1. ¿Cuál era la principal superficie de ataque?**
+El puerto 5432 escuchando en todas las interfaces (`listen_addresses = '*'`, confirmado con `netstat` en `0.0.0.0` y `[::]`). Era la única exposición que dependía de capas externas para estar protegida.
+
+**2. ¿Qué configuración representaba el mayor riesgo?**
+La combinación de `listen_addresses = '*'` y `ssl = off`, junto con que toda la actividad se hacía con `postgres`, un `SUPERUSER`. El servicio era alcanzable por red, sin cifrado, y la única cuenta con acceso tenía control total.
+
+**3. ¿Qué cambio produjo la mayor reducción de exposición?**
+Cambiar `listen_addresses` a `localhost`. El servicio dejó de escuchar en `0.0.0.0` y `[::]` y solo lo hace en `127.0.0.1` y `[::1]`, por lo que desapareció la superficie de red en lugar de solo restringirla.
+
+**4. ¿Qué diferencia existe entre firewall y `pg_hba.conf`?**
+El firewall controla si un paquete **llega** al puerto, sin conocer PostgreSQL. `pg_hba.conf` decide, dentro del servidor, si una conexión que ya llegó puede autenticarse, según base de datos, usuario, origen y método. Se complementan: sin el firewall el puerto queda visible, sin `pg_hba.conf` cualquier equipo permitido puede intentar entrar con cualquier usuario.
+
+**5. ¿Qué diferencia existe entre autenticación y autorización?**
+La autenticación verifica quién eres (contraseña con `scram-sha-256`). La autorización define qué puedes hacer (atributos del rol y `GRANT`). En el laboratorio, `consulta_lab` se autentica correctamente pero no puede crear tablas: `permission denied for schema public`.
+
+**6. ¿Por qué una cuenta de aplicación no debe ser `SUPERUSER`?**
+Porque ignora todas las comprobaciones de permisos. Si la aplicación se compromete (por ejemplo, por inyección SQL), el atacante controla todo el servidor: lee y borra cualquier base, crea roles y puede ejecutar comandos en el sistema operativo. Además se pierde la trazabilidad y el mínimo privilegio.
+
+**7. ¿Por qué cambiar el puerto de PostgreSQL no constituye hardening suficiente?**
+Porque solo oculta el servicio, no lo protege. Un escaneo de puertos lo encuentra igual, y no cambia quién puede conectarse, cómo se autentica, qué privilegios tiene ni si el tráfico va cifrado. Es seguridad por oscuridad. En el laboratorio se dejó 5432 y se redujo la exposición con `listen_addresses`, `pg_hba.conf`, firewall y TLS.
+
+**8. ¿Por qué `listen_addresses = '*'` puede ser innecesario?**
+Porque abre el servicio en todas las interfaces aunque los clientes solo necesiten una. En este laboratorio todos los clientes se conectaban desde `::1`, así que escuchar en otras interfaces solo ampliaba la superficie de ataque sin aportar nada.
+
+**9. ¿Qué papel tiene el sistema operativo en la seguridad de PostgreSQL?**
+Es la base de todo lo demás. `GRANT` y `REVOKE` solo controlan el acceso a través del servidor. Quien lea o modifique directamente los archivos (datos, `pg_hba.conf`, `server.key`) se salta esos controles. Por eso se revisaron los permisos con `icacls`, la cuenta con la que corre el servicio (`NetworkService`) y el firewall del sistema.
+
+**10. ¿Qué controles deberían revisarse periódicamente?**
+- Reglas de `pg_hba.conf` y redes permitidas.
+- Roles, atributos (`SUPERUSER`, `CREATEROLE`) y privilegios.
+- `listen_addresses` y puertos abiertos (`netstat`).
+- Vigencia del certificado TLS (vence a los 365 días) y versión mínima de TLS.
+- Extensiones instaladas.
+- Permisos del sistema operativo y reglas de firewall.
+- Logs de conexión.
+- Versiones menores de PostgreSQL disponibles.
+
+## Reflexión
+
+**¿Qué cambiarías primero si recibieras la responsabilidad de asegurar un servidor PostgreSQL que ya se encuentra funcionando en producción?**
+
+Lo primero sería **inventariar la exposición** y, con base en eso, **restringir el acceso de red** (el firewall y `listen_addresses`), antes que cualquier otro cambio.
+
+**Por qué primero la red:**
+- **Riesgo y exposición:** es lo que más reduce la superficie de ataque. Si el servicio no es alcanzable, la mayoría de ataques externos (fuerza bruta, escaneo, vulnerabilidades del servidor) ni siquiera empiezan.
+- **Impacto y disponibilidad:** una regla de firewall que limita el origen a las redes que ya usan el servicio no requiere reiniciar PostgreSQL ni afecta a los clientes legítimos. Cambiar `listen_addresses` sí requiere reinicio, así que se programa en una ventana de mantenimiento.
+- **Continuidad:** antes de cerrar nada, hay que identificar qué clientes se conectan realmente (`pg_stat_activity`, y los logs de conexión) para no cortar una aplicación en producción. Por eso la observación va antes que el cambio.
+
+**Después, en este orden:**
+1. **Privilegios y cuentas:** separar la cuenta administrativa de la de aplicación. Si la aplicación usa un `SUPERUSER`, es el mayor riesgo interno. Cambiarlo requiere coordinar con el equipo de la aplicación.
+2. **Autenticación y `pg_hba.conf`:** restringir por base, usuario y origen. Se hace con recarga, sin reinicio.
+3. **TLS:** cifrar el tráfico y luego obligarlo con `hostssl`.
+4. **Monitoreo:** activar los logs de conexión desde el inicio, para tener evidencia de lo que pasa y detectar problemas.
+
+Haría la red primero porque es el cambio de mayor reducción de riesgo con menor impacto sobre la continuidad, mientras que cambiar privilegios o autenticación en una aplicación en producción es más delicado y requiere pruebas.
