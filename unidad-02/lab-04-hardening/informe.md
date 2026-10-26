@@ -294,10 +294,8 @@ Actúan en capas distintas. El firewall trabaja en la red: decide si un paquete 
 |---|---|---|
 | `ssl` | `off` | TLS desactivado. El tráfico viaja sin cifrar. |
 | `ssl_min_protocol_version` | `TLSv1.2` | Correcto, pero sin efecto mientras `ssl` esté apagado. |
-| `ssl_cert_file` | `server.crt` | Ruta por defecto (relativa al directorio de datos). Pendiente de verificar que el archivo exista. |
+| `ssl_cert_file` | `server.crt` |  Ruta por defecto (relativa al directorio de datos). Pendiente de verificar que el archivo exista. |
 | `ssl_key_file` | `server.key` | Ruta por defecto (relativa al directorio de datos). Pendiente de verificar que el archivo exista. |
-
-Consulta de la conexión actual (corregida: se une `pg_stat_ssl` con `pg_stat_activity` por `pid`, porque `usename` y `client_addr` no son columnas de `pg_stat_ssl`):
 
 ![TLS](evidencias/tls.png)
 
@@ -427,7 +425,7 @@ Una primera consulta sobre `pg_depend` no encontró dependencias, porque los obj
 | 17 | Registro de conexiones | Sí | `SHOW log_connections` |
 | 18 | Replicación no utilizada deshabilitada | Sí | Reglas `replication` eliminadas |
 | 19 | Obligar TLS (`hostssl`) | No | Mejora futura: hoy TLS está disponible pero no es obligatorio |
-| 20 | Cuenta `postgres` sin uso diario | Parcial | Pendiente: pgAdmin aún conecta con `postgres`; migrar a `dba_lab` |
+| 20 | Cuenta `postgres` sin uso diario | Parcial | pgAdmin aún conecta con `postgres`. Mejora futura: migrar a `dba_lab` |
 
 ## Actividad 18: Caso integral
 
