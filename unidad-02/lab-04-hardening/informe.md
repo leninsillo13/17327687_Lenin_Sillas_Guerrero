@@ -319,3 +319,141 @@ Consulta de la conexión actual (corregida: se une `pg_stat_ssl` con `pg_stat_ac
 | `C:\Program Files\PostgreSQL\18\data\server.key` | **No** |
 
 TLS no está integrado: además de `ssl = off`, no hay certificado ni clave. Activar `ssl = on` sin generarlos impediría que el servicio arrancara.
+
+**Resultado final de la Actividad 15:**
+
+- **¿La conexión actual utiliza TLS?** Sí.
+- **Versión:** TLSv1.3
+- **Cipher:** TLS_AES_256_GCM_SHA384
+
+## Actividad 16: Comparación de configuración antes y después
+
+| Control | Antes | Después | Justificación |
+|---|---|---|---|
+| `listen_addresses` | `*` (todas las interfaces) | `localhost` | Todos los clientes son locales. El servicio dejó de escuchar en `0.0.0.0` y `[::]`, y ahora solo en `127.0.0.1` y `[::1]`. |
+| `pg_hba.conf` | 6 reglas `all`/`all` (local, `127.0.0.1/32`, `::1/128`, más 3 de `replication`) | 11 reglas por base de datos + usuario + origen + método; reglas de `replication` eliminadas | Mínimo privilegio en el acceso. Se quita replicación no utilizada. |
+| Método de autenticación | `scram-sha-256` | `scram-sha-256` (sin cambio) | Ya era el mecanismo recomendado. |
+| Usuarios administrativos | Solo `postgres` (SUPERUSER) podía iniciar sesión | `dba_lab` creado (sin SUPERUSER). `postgres` se conserva como cuenta de emergencia | Separar administración de la cuenta con control total. |
+| Cuentas de aplicación | Ninguna. Todo se hacía con `postgres` | `app_lab` (miembro de `soporte`) y `consulta_lab` (miembro de `analista`) | La aplicación y las consultas no necesitan privilegios administrativos. |
+| Puerto | 5432 | 5432 (sin cambio) | Cambiar el puerto no es hardening suficiente. Se protege con `listen_addresses`, `pg_hba.conf` y firewall. |
+| TLS | `ssl = off`, sin `server.crt` ni `server.key` | `ssl = on`, certificado autofirmado, TLS 1.2 como mínimo | Cifra el tráfico entre cliente y servidor, incluidas las credenciales y los datos. |
+| Permisos SO | Sin acceso para `Users` ni `Everyone`. El servicio corre como `NetworkService` | Sin cambios | Ya eran adecuados. Mejora opcional: solo lectura para `NETWORK SERVICE` sobre los `.conf`. |
+| Extensiones | `plpgsql`, `pgcrypto` | Solo `plpgsql` | `pgcrypto` no tenía objetos dependientes ni uso en vistas o funciones. Se elimina la funcionalidad innecesaria. |
+| Conexiones | `statement_timeout = 0`, `idle_in_transaction_session_timeout = 0` | `idle_in_transaction_session_timeout = 5min` (servidor). `statement_timeout = 30s` solo para `app_lab` | Evita transacciones abandonadas que retienen bloqueos y limita consultas descontroladas de la aplicación sin afectar al administrador. |
+| Registro de conexiones | `log_connections` vacío, `log_disconnections = off` | `log_connections = receipt,authentication,authorization`, `log_disconnections = on` | Dejar rastro de quién se conecta y cuándo (monitoreo). |
+
+## Verificación del Cambio 3: `listen_addresses`
+
+| Verificación | Antes | Después |
+|---|---|---|
+| `SHOW listen_addresses;` | `*` | `localhost` |
+| `netstat` IPv4 | `0.0.0.0:5432` LISTENING | `127.0.0.1:5432` LISTENING |
+| `netstat` IPv6 | `[::]:5432` LISTENING | `[::1]:5432` LISTENING |
+
+**Resultado:** el puerto 5432 ya no es alcanzable desde otras interfaces de red. Es el cambio que más redujo la exposición, porque elimina la superficie de red y no solo la restringe. Ahora la protección ya no depende únicamente de `pg_hba.conf` y del firewall.
+
+## Verificación del Cambio 4: timeouts de sesión
+
+| Verificación | Antes | Después |
+|---|---|---|
+| `SHOW idle_in_transaction_session_timeout;` | `0 ms` | `5min` |
+| `rolconfig` de `app_lab` | vacío | `{statement_timeout=30s}` |
+
+**Resultado:** una transacción inactiva se cierra a los 5 minutos, y cualquier sentencia de `app_lab` que pase de 30 segundos se cancela. El rol `postgres` conserva `statement_timeout = 0` para mantenimiento.
+
+## Verificación del Cambio 5: TLS
+
+**Generación del certificado:** `openssl.exe` no viene con PostgreSQL en Windows, por lo que se usó el incluido en Git for Windows:
+
+```
+openssl req -new -x509 -days 365 -nodes -text -out server.crt -keyout server.key -subj "/CN=localhost"
+```
+
+| Verificación | Antes | Después |
+|---|---|---|
+| `server.crt` / `server.key` | No existen | Existen en el directorio de datos |
+| `SHOW ssl;` | `off` | `on` |
+| `pg_stat_ssl` de la conexión actual | `ssl = false` | `ssl = true`, versión `TLSv1.3`, cipher `TLS_AES_256_GCM_SHA384` |
+| `ssl_min_protocol_version` | `TLSv1.2` | `TLSv1.2` (ahora con efecto) |
+
+**Permisos de `server.key`:** solo `Administradores`, `SYSTEM`, `Lenin` y `NETWORK SERVICE`. No hay acceso para `Users` ni `Everyone`.
+
+**Limitación:** el certificado es autofirmado, por lo que los clientes pueden cifrar la conexión pero no validar la identidad del servidor (`sslmode=verify-full` fallaría). En producción se usaría un certificado emitido por una CA de confianza.
+
+## Verificación del Cambio 6: `pgcrypto`
+
+Una primera consulta sobre `pg_depend` no encontró dependencias, porque los objetos dependen de las **funciones** de la extensión y no de la extensión misma. Se verificó de tres formas:
+
+| Prueba | Resultado |
+|---|---|
+| Búsqueda en `pg_views` de funciones de `pgcrypto` | Sin resultados |
+| `BEGIN; DROP EXTENSION pgcrypto; ROLLBACK;` | Se ejecutó sin error: ningún objeto depende de la extensión |
+| Búsqueda en cuerpos de funciones (`pg_proc.prosrc`) | Sin resultados |
+| Extensiones después del `DROP` | Solo `plpgsql` |
+
+**Decisión:** se elimina `pgcrypto` con `DROP EXTENSION pgcrypto;` (sin `CASCADE`). No hay objetos que la usen y el principio de hardening es habilitar solo la funcionalidad necesaria. Es reversible con `CREATE EXTENSION pgcrypto;`.
+
+**Nota:** los datos que hubieran sido cifrados con funciones de `pgcrypto` no podrían descifrarse mientras la extensión esté eliminada.
+
+## Verificación del Cambio 7: Registro de conexiones
+
+| Verificación | Antes | Después |
+|---|---|---|
+| `SHOW log_connections;` | vacío (sin registro) | `receipt,authentication,authorization` |
+| `SHOW log_disconnections;` | `off` | `on` |
+
+**Resultado:** el servidor ahora registra cada conexión entrante, su autenticación y su desconexión, lo que permite detectar accesos sospechosos y reconstruir incidentes. Los registros se almacenan en `C:/Program Files/PostgreSQL/18/data/log`.
+
+## Actividad 17: Checklist de hardening
+
+| # | Control | Verificado | Evidencia |
+|---|---|---|---|
+| 1 | Puerto documentado | Sí | 5432, `SHOW port` y `netstat` |
+| 2 | Interfaces de escucha justificadas | Sí | `listen_addresses = localhost`; `netstat` solo en `127.0.0.1` y `[::1]` |
+| 3 | `pg_hba.conf` revisado | Sí | `pg_hba_file_rules`, 11 reglas sin errores |
+| 4 | Redes autorizadas restringidas | Sí | Solo `127.0.0.1/32` y `::1/128` |
+| 5 | Autenticación segura | Sí | `password_encryption = scram-sha-256`; todas las reglas usan `scram-sha-256` |
+| 6 | Superusuarios identificados | Sí | Solo `postgres` es `SUPERUSER` |
+| 7 | Cuentas de aplicación separadas | Sí | `app_lab`, `consulta_lab`, `dba_lab` creadas |
+| 8 | Privilegios mínimos | Sí | `consulta_lab` no puede crear tablas (`permission denied for schema public`) |
+| 9 | Extensiones revisadas | Sí | `pgcrypto` eliminada; solo `plpgsql` |
+| 10 | TLS verificado | Sí | `pg_stat_ssl`: TLSv1.3, `TLS_AES_256_GCM_SHA384` |
+| 11 | Configuración protegida | Sí | Sin acceso para `Users`/`Everyone`; respaldos `.bak` |
+| 12 | Directorio de datos protegido | Sí | `icacls` sin grupos amplios; servicio como `NetworkService` |
+| 13 | Firewall documentado | Sí | Firewall activo en 3 perfiles; sin regla de entrada para 5432 |
+| 14 | Actualizaciones documentadas | Sí | PostgreSQL 18.6; revisar periódicamente nuevas versiones menores |
+| 15 | Configuración registrada | Sí | `configuracion/cambios.md` |
+| 16 | Límites de sesión | Sí | `idle_in_transaction_session_timeout = 5min`; `statement_timeout = 30s` para `app_lab` |
+| 17 | Registro de conexiones | Sí | `SHOW log_connections` |
+| 18 | Replicación no utilizada deshabilitada | Sí | Reglas `replication` eliminadas |
+| 19 | Obligar TLS (`hostssl`) | No | Mejora futura: hoy TLS está disponible pero no es obligatorio |
+| 20 | Cuenta `postgres` sin uso diario | Parcial | Pendiente: pgAdmin aún conecta con `postgres`; migrar a `dba_lab` |
+
+## Actividad 18: Caso integral
+
+| # | Problema | Riesgo | Control propuesto |
+|---|---|---|---|
+| 1 | `listen_addresses` en todas las interfaces | Servicio alcanzable desde cualquier red | Limitar a `localhost` o a una IP privada |
+| 2 | Firewall permite 5432 desde cualquier origen | Escaneo, fuerza bruta y explotación desde Internet | Permitir solo la red necesaria; denegar el resto |
+| 3 | `pg_hba.conf` permite `all/all` desde `0.0.0.0/0` | Cualquier equipo puede intentar autenticarse con cualquier usuario y base | Reglas por base + usuario + origen específico |
+| 4 | La aplicación usa una cuenta administrativa | Una inyección SQL da control total del servidor | Cuenta de aplicación con privilegios mínimos |
+| 5 | Posible uso de `SUPERUSER` por la aplicación | Lectura de archivos, `COPY ... PROGRAM`, ejecución de comandos en el SO | Quitar `SUPERUSER`; reservarlo para emergencias |
+| 6 | Se acepta cualquier base de datos para cualquier usuario | Movimiento lateral a bases ajenas a la aplicación | Restringir cada rol a su base |
+| 7 | Sin TLS obligatorio (`host` en lugar de `hostssl`) | Captura de tráfico, datos y consultas en claro | `ssl = on` y reglas `hostssl` |
+| 8 | Sin registro de conexiones | No se detectan accesos sospechosos ni se puede investigar un incidente | `log_connections` y `log_disconnections` activos, y revisión de logs |
+| 9 | Sin límites de sesión | Agotamiento de conexiones, bloqueos prolongados | `idle_in_transaction_session_timeout`, `statement_timeout` por rol |
+| 10 | Confianza solo en contraseñas fuertes | Una credencial filtrada o un ataque a la aplicación da acceso completo | Defensa en profundidad: red, `pg_hba.conf`, mínimo privilegio, TLS, monitoreo |
+| 11 | Permisos del sistema operativo no revisados | Lectura o modificación directa de datos y configuración | Restringir el directorio de datos a la cuenta del servicio |
+| 12 | Sin cuentas separadas para administración y consulta | No hay trazabilidad ni separación de funciones | Roles DBA, APP y CONSULTA |
+
+### ¿Es suficiente tener contraseñas fuertes?
+
+No. Una contraseña fuerte solo protege un punto: **la autenticación**, es decir, que alguien no se haga pasar por la cuenta. No resuelve los demás:
+
+- **Autorización:** si la cuenta es administrativa, quien la use (o quien comprometa la aplicación sin conocer la contraseña, por ejemplo con inyección SQL) tiene control total.
+- **Red:** el servicio expuesto a Internet recibe ataques constantes de fuerza bruta, escaneo y explotación de vulnerabilidades del propio servidor, que no dependen de la contraseña.
+- **Configuración:** `pg_hba.conf` abierto, sin TLS y sin límites de sesión amplía la superficie de ataque y facilita la denegación de servicio.
+- **Sistema operativo:** con acceso a los archivos de datos o de configuración se evita por completo la autenticación.
+- **Monitoreo:** sin logs no se detecta un intento de intrusión ni se puede reconstruir un incidente.
+
+La seguridad es una suma de capas (autenticación + autorización + red + configuración + sistema operativo + monitoreo), y la contraseña es solo una de ellas.
