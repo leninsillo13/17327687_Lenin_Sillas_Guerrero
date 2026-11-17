@@ -30,10 +30,7 @@ Hashes SHA-256 (`evidencias/hashes.sha256`):
 ```text
 ee643d3326e665662da70e7a06ee8ac9135a61f87268e7125ae112850a7f5790  system-profile.json
 6a6e6cbdff889cd5859b9e56bc1913091ff5819c3e753be784b3d01c0cef34c6  bitacora-mongod.log
-411772495dda10d7b4d3c99d34bd7326bdffd747ff6c2b3452228f703467d738  system-profile-nivel2.json
 ```
-
-Los tres hashes son distintos, lo que indica que los archivos tienen contenido distinto.
 
 Como el servidor escribe su bitácora en la salida estándar, existe una copia más completa en `docker logs dba-u3-mongo` mientras el contenedor exista; en este laboratorio no la exporté.
 

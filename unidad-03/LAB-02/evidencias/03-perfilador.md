@@ -35,8 +35,6 @@ db.system.profile.find({ ns: "comercial.clientes" }, { op: 1, ns: 1, command: 1,
   docsExamined: 1, ndeleted: 1, millis: 0, ts: 2026-11-16T04:45:04.545Z, client: "172.17.0.1", appName: "app-ventas-web", user: "app_ventas@comercial" }
 ```
 
-Respaldo de este estado: `evidencias/system-profile-nivel2.json`.
-
 ## 9.1 Interpretación de los documentos
 
 | # | op | Usuario | Cliente | Aplicación | Momento (UTC / local) | Qué hizo | Documentos afectados |

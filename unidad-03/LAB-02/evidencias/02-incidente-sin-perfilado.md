@@ -32,8 +32,6 @@ bitacora().filter(e => JSON.stringify(e).includes("GAMA780912XXX")).length
 bitacora().filter(e => JSON.stringify(e).includes("app-ventas-web")).map(e => ({ t: e.t, c: e.c, ctx: e.ctx, msg: e.msg }))
 ```
 
-Resultado observado (el listado completo está en `salida-lab02.txt`):
-
 ```text
 0
 0

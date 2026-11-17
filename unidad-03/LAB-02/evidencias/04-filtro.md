@@ -47,7 +47,7 @@ Solo aparece la operación `update`; el `find` no se registró.
 - Las lecturas (`query`): ya no hay rastro de quién consultó datos ni con qué filtro (el `find` de `_id: 1` no quedó registrado).
 - Cualquier operación que no sea `insert`, `update` o `remove`, como los comandos (`command`) administrativos y de estructura.
 - Las operaciones lentas: con un filtro, `slowms` y `sampleRate` no se usan, así que una consulta lenta tampoco se registra por esa vía.
-- El contenido previo de `system.profile`, que se borró con `drop()`; solo se conserva en el respaldo exportado.
+- El contenido previo de `system.profile`, que se borró con `drop()`;.
 
 **Gané:**
 - Menor volumen y menor costo de rendimiento que el nivel 2.
