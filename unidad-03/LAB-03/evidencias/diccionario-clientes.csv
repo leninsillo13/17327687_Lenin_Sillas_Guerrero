@@ -1,0 +1,12 @@
+columna,tipo,longitud,acepta_nulos,descripcion
+id,bigint,,NO,Identificador interno del cliente. Generado por el sistema.
+nombre,character varying,120,NO,Nombre completo. Dato personal identificador directo.
+correo,character varying,150,NO,Correo de contacto. Dato personal. Uso: notificaciones al cliente.
+telefono,character varying,20,YES,Teléfono de contacto a 10 dígitos. Dato personal. Uso: contacto comercial y soporte.
+rfc,character varying,13,YES,RFC del cliente. Dato personal. Uso: facturación. Cambios auditados en auditoria.cambios_clientes.
+edad,integer,,YES,Edad en años cumplidos. Dato personal. Uso: analítica agregada.
+ciudad,character varying,80,YES,Ciudad del cliente. Dato personal (domicilio parcial). Uso: logística y analítica agregada.
+codigo_postal,character varying,10,YES,Código postal de 5 dígitos. Dato personal (domicilio parcial). Uso: logística y analítica agregada.
+fecha_alta,date,,YES,"Fecha de alta del cliente (tipo date, sin hora). Valor por defecto: fecha actual. No es dato personal sensible."
+segmento,character varying,20,YES,Segmento comercial asignado al cliente. Agregado en LAB-01. Uso: analítica y campañas.
+canal_alta,character varying,20,YES,Canal por el que se registró el cliente. Cambio CAM-2026-014.
