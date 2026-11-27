@@ -1,0 +1,33 @@
+[
+  {
+    "op": "update",
+    "ns": "comercial.clientes",
+    "command": {
+      "q": {
+        "_id": 1
+      },
+      "u": {
+        "$set": {
+          "telefono": "6670000000"
+        }
+      }
+    },
+    "ts": {
+      "$date": "2026-11-16T04:45:06.922Z"
+    },
+    "client": "172.17.0.1",
+    "appName": "app-ventas-web",
+    "user": "app_ventas@comercial"
+  },
+  {
+    "op": "command",
+    "ns": "comercial.system.profile",
+    "command": {},
+    "ts": {
+      "$date": "2026-11-16T04:45:10.338Z"
+    },
+    "client": "172.17.0.1",
+    "appName": "mongosh 2.14.2",
+    "user": "admin@admin"
+  }
+]

@@ -1,0 +1,272 @@
+2026-11-19 21:46:24.068 CST [6196] user= db= app= client= LOG:  el sistema de bases de datos fue interrumpido; última vez en funcionamiento en 2026-11-16 14:40:41 CST
+2026-11-19 21:46:25.416 CST [6196] user= db= app= client= LOG:  el sistema de bases de datos no fue apagado apropiadamente; se está efectuando la recuperación automática
+2026-11-19 21:46:25.428 CST [6196] user= db= app= client= LOG:  redo comienza en 0/24FDD68
+2026-11-19 21:46:25.429 CST [6196] user= db= app= client= LOG:  largo de registro no válido en 0/24FDDA0: se esperaba al menos 24, se obtuvo 0
+2026-11-19 21:46:25.429 CST [6196] user= db= app= client= LOG:  redo listo en 0/24FDD68 utilización del sistema: CPU: usuario: 0.00 s, sistema: 0.00 s, transcurrido: 0.00 s
+2026-11-19 21:46:25.441 CST [6180] user= db= app= client= LOG:  empezando checkpoint: end-of-recovery immediate wait
+2026-11-19 21:46:25.460 CST [6180] user= db= app= client= LOG:  checkpoint completo: escritos 0 búfers (0.0%); escritos 3 búfers SLRU; 0 archivos WAL añadidos, 0 eliminados, 0 reciclados; write=0.003 s, sync=0.004 s, total=0.025 s; archivos sincronizados=2, más largo=0.002 s, promedio=0.002 s; distancia=0 kB, estimación=0 kB; lsn=0/24FDDA0, lsn de redo=0/24FDDA0
+2026-11-21 22:03:39.095 CST [18168] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58312
+2026-11-21 22:03:43.390 CST [10488] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58313
+2026-11-21 22:03:43.410 CST [10488] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:03:43.410 CST [10488] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:12:22.739 CST [10488] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:08:39.366 usuario=postgres base=comercial host=::1 port=58313
+2026-11-21 22:19:55.028 CST [16844] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58397
+2026-11-21 22:19:55.070 CST [16844] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:19:55.070 CST [16844] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:19:55.085 CST [16844] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.074 usuario=postgres base=comercial host=::1 port=58397
+2026-11-21 22:19:55.361 CST [5516] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58398
+2026-11-21 22:19:55.389 CST [5516] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:19:55.389 CST [5516] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:19:55.406 CST [5516] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.071 usuario=postgres base=comercial host=::1 port=58398
+2026-11-21 22:19:55.673 CST [13068] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58399
+2026-11-21 22:19:55.700 CST [13068] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:19:55.700 CST [13068] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:19:55.705 CST [13068] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.057 usuario=postgres base=comercial host=::1 port=58399
+2026-11-21 22:19:55.851 CST [13196] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58400
+2026-11-21 22:19:55.879 CST [13196] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:19:55.879 CST [13196] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:19:55.894 CST [13196] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.060 usuario=postgres base=comercial host=::1 port=58400
+2026-11-21 22:19:56.025 CST [17060] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58401
+2026-11-21 22:19:56.053 CST [17060] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:19:56.053 CST [17060] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:19:56.072 CST [17060] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.064 usuario=postgres base=comercial host=::1 port=58401
+2026-11-21 22:19:56.245 CST [7504] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58402
+2026-11-21 22:19:56.272 CST [7504] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:19:56.273 CST [7504] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:19:56.300 CST [7504] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.072 usuario=postgres base=comercial host=::1 port=58402
+2026-11-21 22:19:56.459 CST [8564] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58403
+2026-11-21 22:19:56.487 CST [8564] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:19:56.487 CST [8564] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:19:56.608 CST [8564] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.166 usuario=postgres base=comercial host=::1 port=58403
+2026-11-21 22:19:56.719 CST [9448] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58404
+2026-11-21 22:19:56.748 CST [9448] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:19:56.748 CST [9448] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:19:56.754 CST [9448] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: INSERT INTO clientes (nombre, correo, telefono, rfc, edad, ciudad, codigo_postal)
+	SELECT 'Ana Lopez', 'ANA.LOPEZ@example.test', '6671234567', 'LOAA850315AB', 41, 'Culiacan', '80000'
+	WHERE NOT EXISTS (SELECT 1 FROM clientes WHERE correo = 'ANA.LOPEZ@example.test');
+2026-11-21 22:19:56.847 CST [9448] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: INSERT INTO clientes (nombre, correo, telefono, rfc, edad, ciudad, codigo_postal)
+	SELECT 'Jorge DÃ­az', 'sin-correo', '667', NULL, -3, 'CuliacÃ¡n', '8000'
+	WHERE NOT EXISTS (SELECT 1 FROM clientes WHERE correo = 'sin-correo');
+2026-11-21 22:19:56.861 CST [9448] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.158 usuario=postgres base=comercial host=::1 port=58404
+2026-11-21 22:19:57.093 CST [2416] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58405
+2026-11-21 22:19:57.120 CST [2416] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:19:57.120 CST [2416] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:19:57.125 CST [2416] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: COMMENT ON TABLE clientes IS 'Clientes de Comercializadora Norte. Propietario: Gerencia Comercial. Custodio: DBA. ClasificaciÃ³n: confidencial (contiene datos personales).';
+2026-11-21 22:19:57.154 CST [2416] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: COMMENT ON COLUMN clientes.id IS 'Identificador interno del cliente. Generado por el sistema.';
+2026-11-21 22:19:57.155 CST [2416] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: COMMENT ON COLUMN clientes.nombre IS 'Nombre completo. Dato personal identificador directo.';
+2026-11-21 22:19:57.156 CST [2416] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: COMMENT ON COLUMN clientes.correo IS 'Correo de contacto. Dato personal. Uso: notificaciones al cliente.';
+2026-11-21 22:19:57.156 CST [2416] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: COMMENT ON COLUMN clientes.telefono IS 'TelÃ©fono de contacto a 10 dÃ­gitos. Dato personal. Uso: contacto comercial y soporte.';
+2026-11-21 22:19:57.157 CST [2416] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: COMMENT ON COLUMN clientes.rfc IS 'RFC del cliente. Dato personal. Uso: facturaciÃ³n. Cambios auditados en auditoria.cambios_clientes.';
+2026-11-21 22:19:57.158 CST [2416] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: COMMENT ON COLUMN clientes.edad IS 'Edad en aÃ±os cumplidos. Dato personal. Uso: analÃ­tica agregada.';
+2026-11-21 22:19:57.158 CST [2416] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: COMMENT ON COLUMN clientes.ciudad IS 'Ciudad del cliente. Dato personal (domicilio parcial). Uso: logÃ­stica y analÃ­tica agregada.';
+2026-11-21 22:19:57.159 CST [2416] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: COMMENT ON COLUMN clientes.codigo_postal IS 'CÃ³digo postal de 5 dÃ­gitos. Dato personal (domicilio parcial). Uso: logÃ­stica y analÃ­tica agregada.';
+2026-11-21 22:19:57.160 CST [2416] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: COMMENT ON COLUMN clientes.fecha_alta IS 'Fecha y hora de alta del cliente. Generado por el sistema. No es dato personal sensible.';
+2026-11-21 22:19:57.160 CST [2416] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: COMMENT ON COLUMN clientes.segmento IS 'Segmento comercial asignado al cliente. Agregado en LAB-01. Uso: analÃ­tica y campaÃ±as.';
+2026-11-21 22:19:57.198 CST [2416] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.130 usuario=postgres base=comercial host=::1 port=58405
+2026-11-21 22:19:57.331 CST [8196] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58406
+2026-11-21 22:19:57.359 CST [8196] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:19:57.359 CST [8196] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:19:57.363 CST [8196] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: CREATE SCHEMA IF NOT EXISTS gobierno;
+2026-11-21 22:19:57.384 CST [8196] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: REVOKE ALL ON SCHEMA gobierno FROM PUBLIC;
+2026-11-21 22:19:57.388 CST [8196] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: CREATE TABLE IF NOT EXISTS gobierno.solicitudes_cambio (
+	    folio            TEXT PRIMARY KEY,
+	    descripcion      TEXT NOT NULL,
+	    solicitado_por   TEXT NOT NULL,
+	    aprobado_por     TEXT,
+	    ambiente         TEXT NOT NULL CHECK (ambiente IN ('desarrollo', 'pruebas', 'produccion')),
+	    fecha_aprobacion TIMESTAMPTZ,
+	    ventana_inicio   TIMESTAMPTZ,
+	    ventana_fin      TIMESTAMPTZ
+	);
+2026-11-21 22:19:57.486 CST [8196] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: COMMENT ON TABLE gobierno.solicitudes_cambio IS 'Registro de solicitudes de cambio en la base comercial. Propietario: ComitÃ© de cambios. Custodio: DBA. Evidencia de POL-06.';
+2026-11-21 22:19:57.488 CST [8196] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: INSERT INTO gobierno.solicitudes_cambio VALUES
+	('CAM-2026-014', 'Agregar columna canal_alta a clientes', 'Gerencia Comercial',
+	 'ComitÃ© de cambios', 'produccion', now() - interval '1 day',
+	 now() - interval '5 minutes', now() + interval '1 hour')
+	ON CONFLICT (folio) DO NOTHING;
+2026-11-21 22:19:57.510 CST [8196] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: ALTER TABLE clientes ADD COLUMN canal_alta VARCHAR(20);
+2026-11-21 22:19:57.515 CST [8196] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: COMMENT ON COLUMN clientes.canal_alta IS 'Canal por el que se registrÃ³ el cliente. Cambio CAM-2026-014.';
+2026-11-21 22:20:00.557 CST [8196] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:03.243 usuario=postgres base=comercial host=::1 port=58406
+2026-11-21 22:20:00.692 CST [7300] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58407
+2026-11-21 22:20:00.721 CST [7300] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:00.721 CST [7300] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:00.749 CST [7300] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.075 usuario=postgres base=comercial host=::1 port=58407
+2026-11-21 22:20:00.944 CST [3696] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58408
+2026-11-21 22:20:00.971 CST [3696] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:00.971 CST [3696] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:00.990 CST [3696] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.063 usuario=postgres base=comercial host=::1 port=58408
+2026-11-21 22:20:01.124 CST [16952] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58409
+2026-11-21 22:20:01.152 CST [16952] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:01.152 CST [16952] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:01.661 CST [16952] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.555 usuario=postgres base=comercial host=::1 port=58409
+2026-11-21 22:20:01.830 CST [19080] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58410
+2026-11-21 22:20:01.857 CST [19080] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:01.857 CST [19080] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:01.885 CST [19080] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.073 usuario=postgres base=comercial host=::1 port=58410
+2026-11-21 22:20:02.184 CST [14092] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58411
+2026-11-21 22:20:02.212 CST [14092] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:02.212 CST [14092] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:02.228 CST [14092] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.069 usuario=postgres base=comercial host=::1 port=58411
+2026-11-21 22:20:02.497 CST [18200] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58412
+2026-11-21 22:20:02.524 CST [18200] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:02.524 CST [18200] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:02.540 CST [18200] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.069 usuario=postgres base=comercial host=::1 port=58412
+2026-11-21 22:20:02.688 CST [8448] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58413
+2026-11-21 22:20:02.717 CST [8448] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:02.717 CST [8448] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:02.732 CST [8448] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.064 usuario=postgres base=comercial host=::1 port=58413
+2026-11-21 22:20:03.019 CST [8900] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58414
+2026-11-21 22:20:03.047 CST [8900] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:03.047 CST [8900] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:03.063 CST [8900] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.068 usuario=postgres base=comercial host=::1 port=58414
+2026-11-21 22:20:03.223 CST [7108] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58415
+2026-11-21 22:20:03.251 CST [7108] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:03.251 CST [7108] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:03.374 CST [7108] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.169 usuario=postgres base=comercial host=::1 port=58415
+2026-11-21 22:20:03.550 CST [15212] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58416
+2026-11-21 22:20:03.577 CST [15212] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:03.577 CST [15212] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:03.584 CST [15212] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.055 usuario=postgres base=comercial host=::1 port=58416
+2026-11-21 22:20:03.767 CST [13344] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58417
+2026-11-21 22:20:03.794 CST [13344] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:03.794 CST [13344] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:03.803 CST [13344] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.053 usuario=postgres base=comercial host=::1 port=58417
+2026-11-21 22:20:03.967 CST [18212] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58418
+2026-11-21 22:20:03.995 CST [18212] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:03.995 CST [18212] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:04.008 CST [18212] user=postgres db=comercial app=psql client=::1 LOG:  disconnection: session time: 0:00:00.059 user=postgres database=comercial host=::1 port=58418
+2026-11-21 22:20:04.298 CST [15492] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58419
+2026-11-21 22:20:04.326 CST [15492] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:04.326 CST [15492] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:04.346 CST [15492] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.073 usuario=postgres base=comercial host=::1 port=58419
+2026-11-21 22:20:04.620 CST [16016] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58420
+2026-11-21 22:20:04.648 CST [16016] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:04.648 CST [16016] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:04.657 CST [16016] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.055 usuario=postgres base=comercial host=::1 port=58420
+2026-11-21 22:20:04.797 CST [7744] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58421
+2026-11-21 22:20:04.824 CST [7744] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:04.824 CST [7744] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:04.831 CST [7744] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.051 usuario=postgres base=comercial host=::1 port=58421
+2026-11-21 22:20:04.970 CST [12776] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58422
+2026-11-21 22:20:04.999 CST [12776] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:05.000 CST [12776] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:05.030 CST [12776] user=postgres db=comercial app=psql client=::1 ERROR:  secuencia de bytes no vÃ¡lida para codificaciÃ³n Â«UTF8Â»: 0xfa
+2026-11-21 22:20:05.030 CST [12776] user=postgres db=comercial app=psql client=::1 SENTENCIA:  SELECT replace(pg_read_file(pg_current_logfile()), '<REDACTED>', '<REDACTED>')
+2026-11-21 22:20:05.030 CST [12776] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.078 usuario=postgres base=comercial host=::1 port=58422
+2026-11-21 22:20:05.275 CST [15176] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58423
+2026-11-21 22:20:05.304 CST [15176] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:05.304 CST [15176] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:05.309 CST [15176] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.051 usuario=postgres base=comercial host=::1 port=58423
+2026-11-21 22:20:05.457 CST [14660] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58424
+2026-11-21 22:20:05.484 CST [14660] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:05.484 CST [14660] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:05.498 CST [14660] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.058 usuario=postgres base=comercial host=::1 port=58424
+2026-11-21 22:20:05.779 CST [11840] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58425
+2026-11-21 22:20:05.806 CST [11840] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:05.807 CST [11840] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:05.811 CST [11840] user=postgres db=comercial app=psql client=::1 ERROR:  secuencia de bytes no vÃ¡lida para codificaciÃ³n Â«UTF8Â»: 0xfa
+2026-11-21 22:20:05.811 CST [11840] user=postgres db=comercial app=psql client=::1 SENTENCIA:  SELECT pg_read_file('log/postgresql-2026-10-17_225408.log')
+2026-11-21 22:20:05.811 CST [11840] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.063 usuario=postgres base=comercial host=::1 port=58425
+2026-11-21 22:20:05.979 CST [13056] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58426
+2026-11-21 22:20:06.008 CST [13056] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:06.008 CST [13056] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:06.013 CST [13056] user=postgres db=comercial app=psql client=::1 ERROR:  secuencia de bytes no vÃ¡lida para codificaciÃ³n Â«UTF8Â»: 0xfa
+2026-11-21 22:20:06.013 CST [13056] user=postgres db=comercial app=psql client=::1 SENTENCIA:  SELECT pg_read_file('log/postgresql-2026-10-18_000000.log')
+2026-11-21 22:20:06.013 CST [13056] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.051 usuario=postgres base=comercial host=::1 port=58426
+2026-11-21 22:20:06.178 CST [6876] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58427
+2026-11-21 22:20:06.206 CST [6876] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:06.206 CST [6876] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:06.211 CST [6876] user=postgres db=comercial app=psql client=::1 ERROR:  secuencia de bytes no vÃ¡lida para codificaciÃ³n Â«UTF8Â»: 0xed 0x6e 0x65
+2026-11-21 22:20:06.211 CST [6876] user=postgres db=comercial app=psql client=::1 SENTENCIA:  SELECT pg_read_file('log/postgresql-2026-10-19_000000.log')
+2026-11-21 22:20:06.211 CST [6876] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.051 usuario=postgres base=comercial host=::1 port=58427
+2026-11-21 22:20:06.352 CST [6172] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58428
+2026-11-21 22:20:06.381 CST [6172] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:06.381 CST [6172] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:06.386 CST [6172] user=postgres db=comercial app=psql client=::1 ERROR:  secuencia de bytes no vÃ¡lida para codificaciÃ³n Â«UTF8Â»: 0xfa
+2026-11-21 22:20:06.386 CST [6172] user=postgres db=comercial app=psql client=::1 SENTENCIA:  SELECT pg_read_file('log/postgresql-2026-10-25_003359.log')
+2026-11-21 22:20:06.386 CST [6172] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.052 usuario=postgres base=comercial host=::1 port=58428
+2026-11-21 22:20:06.524 CST [8848] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58429
+2026-11-21 22:20:06.552 CST [8848] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:06.552 CST [8848] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:06.557 CST [8848] user=postgres db=comercial app=psql client=::1 ERROR:  secuencia de bytes no vÃ¡lida para codificaciÃ³n Â«UTF8Â»: 0xf3 0x6e 0x20 0x72
+2026-11-21 22:20:06.557 CST [8848] user=postgres db=comercial app=psql client=::1 SENTENCIA:  SELECT pg_read_file('log/postgresql-2026-11-07_211832.log')
+2026-11-21 22:20:06.558 CST [8848] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.051 usuario=postgres base=comercial host=::1 port=58429
+2026-11-21 22:20:06.694 CST [10708] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58430
+2026-11-21 22:20:06.723 CST [10708] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:06.723 CST [10708] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:06.728 CST [10708] user=postgres db=comercial app=psql client=::1 ERROR:  secuencia de bytes no vÃ¡lida para codificaciÃ³n Â«UTF8Â»: 0xfa
+2026-11-21 22:20:06.728 CST [10708] user=postgres db=comercial app=psql client=::1 SENTENCIA:  SELECT pg_read_file('log/postgresql-2026-11-07_235304.log')
+2026-11-21 22:20:06.728 CST [10708] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.051 usuario=postgres base=comercial host=::1 port=58430
+2026-11-21 22:20:06.873 CST [17248] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58431
+2026-11-21 22:20:06.901 CST [17248] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:06.901 CST [17248] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:06.906 CST [17248] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.049 usuario=postgres base=comercial host=::1 port=58431
+2026-11-21 22:20:07.047 CST [9400] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58432
+2026-11-21 22:20:07.074 CST [9400] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:07.075 CST [9400] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:07.079 CST [9400] user=postgres db=comercial app=psql client=::1 ERROR:  secuencia de bytes no vÃ¡lida para codificaciÃ³n Â«UTF8Â»: 0xfa
+2026-11-21 22:20:07.079 CST [9400] user=postgres db=comercial app=psql client=::1 SENTENCIA:  SELECT pg_read_file('log/postgresql-2026-11-08_131403.log')
+2026-11-21 22:20:07.079 CST [9400] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.049 usuario=postgres base=comercial host=::1 port=58432
+2026-11-21 22:20:07.227 CST [18112] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58433
+2026-11-21 22:20:07.255 CST [18112] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:07.255 CST [18112] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:07.259 CST [18112] user=postgres db=comercial app=psql client=::1 ERROR:  secuencia de bytes no vÃ¡lida para codificaciÃ³n Â«UTF8Â»: 0xfa
+2026-11-21 22:20:07.259 CST [18112] user=postgres db=comercial app=psql client=::1 SENTENCIA:  SELECT pg_read_file('log/postgresql-2026-11-08_201009.log')
+2026-11-21 22:20:07.259 CST [18112] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.051 usuario=postgres base=comercial host=::1 port=58433
+2026-11-21 22:20:07.424 CST [18688] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58434
+2026-11-21 22:20:07.450 CST [18688] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:07.450 CST [18688] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:07.454 CST [18688] user=postgres db=comercial app=psql client=::1 ERROR:  secuencia de bytes no vÃ¡lida para codificaciÃ³n Â«UTF8Â»: 0xfa
+2026-11-21 22:20:07.454 CST [18688] user=postgres db=comercial app=psql client=::1 SENTENCIA:  SELECT pg_read_file('log/postgresql-2026-11-10_213627.log')
+2026-11-21 22:20:07.455 CST [18688] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.048 usuario=postgres base=comercial host=::1 port=58434
+2026-11-21 22:20:07.642 CST [15908] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58435
+2026-11-21 22:20:07.670 CST [15908] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:07.670 CST [15908] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:07.675 CST [15908] user=postgres db=comercial app=psql client=::1 ERROR:  secuencia de bytes no vÃ¡lida para codificaciÃ³n Â«UTF8Â»: 0xfa
+2026-11-21 22:20:07.675 CST [15908] user=postgres db=comercial app=psql client=::1 SENTENCIA:  SELECT pg_read_file('log/postgresql-2026-11-10_215225.log')
+2026-11-21 22:20:07.675 CST [15908] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.050 usuario=postgres base=comercial host=::1 port=58435
+2026-11-21 22:20:07.838 CST [2300] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58436
+2026-11-21 22:20:07.866 CST [2300] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:07.866 CST [2300] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:07.871 CST [2300] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.050 usuario=postgres base=comercial host=::1 port=58436
+2026-11-21 22:20:08.040 CST [16180] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58437
+2026-11-21 22:20:08.068 CST [16180] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:08.069 CST [16180] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:08.073 CST [16180] user=postgres db=comercial app=psql client=::1 ERROR:  secuencia de bytes no vÃ¡lida para codificaciÃ³n Â«UTF8Â»: 0xfa
+2026-11-21 22:20:08.073 CST [16180] user=postgres db=comercial app=psql client=::1 SENTENCIA:  SELECT pg_read_file('log/postgresql-2026-11-15_222526.log')
+2026-11-21 22:20:08.074 CST [16180] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.051 usuario=postgres base=comercial host=::1 port=58437
+2026-11-21 22:20:08.201 CST [13480] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58438
+2026-11-21 22:20:08.229 CST [13480] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:20:08.230 CST [13480] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:20:08.234 CST [13480] user=postgres db=comercial app=psql client=::1 ERROR:  secuencia de bytes no vÃ¡lida para codificaciÃ³n Â«UTF8Â»: 0xfa
+2026-11-21 22:20:08.234 CST [13480] user=postgres db=comercial app=psql client=::1 SENTENCIA:  SELECT pg_read_file('log/postgresql-2026-11-16_144038.log')
+2026-11-21 22:20:08.234 CST [13480] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.051 usuario=postgres base=comercial host=::1 port=58438
+2026-11-21 22:20:57.344 CST [6180] user= db= app= client= LOG:  empezando checkpoint: time
+2026-11-21 22:21:08.991 CST [6180] user= db= app= client= LOG:  checkpoint completo: escritos 106 búfers (0.6%); escritos 1 búfers SLRU; 0 archivos WAL añadidos, 0 eliminados, 0 reciclados; write=11.583 s, sync=0.047 s, total=11.648 s; archivos sincronizados=51, más largo=0.002 s, promedio=0.001 s; distancia=748 kB, estimación=748 kB; lsn=0/25EC668, lsn de redo=0/25B8E30
+2026-11-21 22:29:34.974 CST [12480] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58456
+2026-11-21 22:29:35.005 CST [12480] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:29:35.005 CST [12480] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:29:35.009 CST [12480] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: COMMENT ON TABLE clientes IS 'Clientes de Comercializadora Norte. Propietario: Gerencia Comercial. Custodio: DBA. ClasificaciÃ³n: confidencial (contiene datos personales).';
+2026-11-21 22:29:35.019 CST [12480] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: COMMENT ON COLUMN clientes.id IS 'Identificador interno del cliente. Generado por el sistema.';
+2026-11-21 22:29:35.020 CST [12480] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: COMMENT ON COLUMN clientes.nombre IS 'Nombre completo. Dato personal identificador directo.';
+2026-11-21 22:29:35.020 CST [12480] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: COMMENT ON COLUMN clientes.correo IS 'Correo de contacto. Dato personal. Uso: notificaciones al cliente.';
+2026-11-21 22:29:35.021 CST [12480] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: COMMENT ON COLUMN clientes.telefono IS 'TelÃ©fono de contacto a 10 dÃ­gitos. Dato personal. Uso: contacto comercial y soporte.';
+2026-11-21 22:29:35.021 CST [12480] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: COMMENT ON COLUMN clientes.rfc IS 'RFC del cliente. Dato personal. Uso: facturaciÃ³n. Cambios auditados en auditoria.cambios_clientes.';
+2026-11-21 22:29:35.021 CST [12480] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: COMMENT ON COLUMN clientes.edad IS 'Edad en aÃ±os cumplidos. Dato personal. Uso: analÃ­tica agregada.';
+2026-11-21 22:29:35.022 CST [12480] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: COMMENT ON COLUMN clientes.ciudad IS 'Ciudad del cliente. Dato personal (domicilio parcial). Uso: logÃ­stica y analÃ­tica agregada.';
+2026-11-21 22:29:35.022 CST [12480] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: COMMENT ON COLUMN clientes.codigo_postal IS 'CÃ³digo postal de 5 dÃ­gitos. Dato personal (domicilio parcial). Uso: logÃ­stica y analÃ­tica agregada.';
+2026-11-21 22:29:35.023 CST [12480] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: COMMENT ON COLUMN clientes.fecha_alta IS 'Fecha de alta del cliente (tipo date, sin hora). Valor por defecto: fecha actual. No es dato personal sensible.';
+2026-11-21 22:29:35.023 CST [12480] user=postgres db=comercial app=psql client=::1 LOG:  sentencia: COMMENT ON COLUMN clientes.segmento IS 'Segmento comercial asignado al cliente. Agregado en LAB-01. Uso: analÃ­tica y campaÃ±as.';
+2026-11-21 22:29:35.048 CST [12480] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.093 usuario=postgres base=comercial host=::1 port=58456
+2026-11-21 22:29:35.339 CST [15964] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58457
+2026-11-21 22:29:35.366 CST [15964] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:29:35.366 CST [15964] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:29:35.393 CST [15964] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.083 usuario=postgres base=comercial host=::1 port=58457
+2026-11-21 22:29:35.604 CST [2860] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58458
+2026-11-21 22:29:35.633 CST [2860] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:29:35.633 CST [2860] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+2026-11-21 22:29:35.637 CST [2860] user=postgres db=comercial app=psql client=::1 LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.053 usuario=postgres base=comercial host=::1 port=58458
+2026-11-21 22:29:35.910 CST [1728] user=[desconocido] db=[desconocido] app=[desconocido] client=::1 LOG:  conexión recibida: host=::1 port=58459
+2026-11-21 22:29:35.942 CST [1728] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autenticada: identidad=«postgres» método=scram-sha-256 (C:/Program Files/PostgreSQL/18/data/pg_hba.conf:148)
+2026-11-21 22:29:35.942 CST [1728] user=postgres db=comercial app=[desconocido] client=::1 LOG:  conexión autorizada: usuario=postgres base_de_datos=comercial nombre_de_aplicación=psql SSL habilitado (protocolo=TLSv1.3, cifrado=TLS_AES_256_GCM_SHA384, bits=256)
+
